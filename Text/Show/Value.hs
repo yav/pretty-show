@@ -24,5 +24,3 @@ data Value    = Con Name [Value]            -- ^ Data constructor
               | List [Value]                -- ^ List
               | Other String                -- ^ Something else (e.g. number)
                 deriving (Eq,Show)
-
-

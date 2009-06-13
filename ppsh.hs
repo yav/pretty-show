@@ -24,4 +24,3 @@ selftest1 :: String -> Bool
 selftest1 txt = case parseValue txt of
                   Just v  -> selftest v
                   Nothing -> True
-

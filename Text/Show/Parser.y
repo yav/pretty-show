@@ -19,7 +19,7 @@ import Language.Haskell.Lexer
         ','             { (Special, (_,",")) }
 
         INT             { (IntLit,   (_,$$)) }
-        FLOAT           { (FloatLit, (_,$$)) } 
+        FLOAT           { (FloatLit, (_,$$)) }
         STRING          { (StringLit, (_,$$)) }
         CHAR            { (CharLit,  (_,$$)) }
 
@@ -28,11 +28,11 @@ import Language.Haskell.Lexer
         CONID           { (Conid,    (_,$$)) }
         QCONID          { (Qconid,   (_,$$)) }
         CONSYM          { (Consym,   (_,$$)) }
-        QCONSYM         { (Qconsym,  (_,$$)) } 
+        QCONSYM         { (Qconsym,  (_,$$)) }
 
 
 %monad { Maybe } { (>>=) } { return }
-%name parseValue value 
+%name parseValue value
 %tokentype { PosToken }
 
 

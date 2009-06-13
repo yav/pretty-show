@@ -74,5 +74,3 @@ block a b []      = char a <> char b
 block a b (d:ds)  = char a <+> d
                  $$ vcat [ char ',' <+> x | x <- ds ]
                  $$ char b
-
-

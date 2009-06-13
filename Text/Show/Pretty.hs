@@ -8,7 +8,7 @@
 -- Stability   :  provisional
 -- Portability :  Haskell 98
 --
--- Functions for human-readable derived show instances.
+-- Functions for human-readable derived 'Show' instances.
 --------------------------------------------------------------------------------
 
 
@@ -25,13 +25,12 @@ import Language.Haskell.Lexer(rmSpace,lexerPass0)
 parseValue :: String -> Maybe Value
 parseValue = P.parseValue . rmSpace . lexerPass0
 
--- | Convert a generic value into a pretty String, if possible.
+-- | Convert a generic value into a pretty 'String', if possible.
 ppShow :: Show a => a -> String
 ppShow = show . ppDoc
 
--- | Try to show a value, prettily.
--- If we do not undertant the value, then we just use its
--- standard show instance.
+-- | Try to show a value, prettily. If we do not understand the value, then we
+--   just use its standard 'Show' instance.
 ppDoc :: Show a => a -> Doc
 ppDoc a = case parseValue txt of
             Just v  -> ppValue v
@@ -39,10 +38,9 @@ ppDoc a = case parseValue txt of
   where txt = show a
 
 
--- | Pretty print a generic value.
--- Our intention is that the result is equivalent to the show
--- insrnace for the origianl value, except possivly easier to
--- unserstand by a human.
+-- | Pretty print a generic value. Our intention is that the result is
+--   equivalent to the 'Show' instance for the original value, except possibly
+--   easier to understand by a human.
 ppValue :: Value -> Doc
 ppValue val = case val of
   Con c vs    -> ppCon c vs

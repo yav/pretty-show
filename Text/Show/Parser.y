@@ -26,6 +26,8 @@ import Language.Haskell.Lexer
 
         VARID           { (Varid,    (_,$$)) }
         QVARID          { (Qvarid,   (_,$$)) }
+        VARSYM          { (Varsym,   (_,$$)) }
+        QVARSYM         { (Qvarsym,  (_,$$)) }
         CONID           { (Conid,    (_,$$)) }
         QCONID          { (Qconid,   (_,$$)) }
         CONSYM          { (Consym,   (_,$$)) }
@@ -59,9 +61,13 @@ avalue                       :: { Value }
 con                          :: { String }
   : CONID                       { $1 }
   | QCONID                      { $1 }
+  | prefix(CONSYM)              { $1 }
+  | prefix(QCONSYM)             { $1 }
   -- to support things like "fromList x"
   | VARID                       { $1 }
   | QVARID                      { $1 }
+  | prefix(VARSYM)              { $1 }
+  | prefix(QVARSYM)             { $1 }
 
 field                        :: { (Name,Value) }
   : VARID '=' value             { ($1,$3) }
@@ -72,6 +78,7 @@ tuple                        :: { [Value] }
 
 
 -- Common Rule Patterns --------------------------------------------------------
+prefix(p)       : '(' p ')'           { "(" ++ $2 ++ ")" }
 
 sep1(p,q)       : p list(snd(q,p))    { $1 : $2 }
 sep(p,q)        : sep1(p,q)           { $1 }

@@ -17,6 +17,7 @@ import Language.Haskell.Lexer
         '['             { (Special, (_,"[")) }
         ']'             { (Special, (_,"]")) }
         ','             { (Special, (_,",")) }
+        '-'             { (Varsym,  (_,"-")) }
 
         INT             { (IntLit,   (_,$$)) }
         FLOAT           { (FloatLit, (_,$$)) }
@@ -24,7 +25,7 @@ import Language.Haskell.Lexer
         CHAR            { (CharLit,  (_,$$)) }
 
         VARID           { (Varid,    (_,$$)) }
-        QVARID          { (Qvarid,    (_,$$)) }
+        QVARID          { (Qvarid,   (_,$$)) }
         CONID           { (Conid,    (_,$$)) }
         QCONID          { (Qconid,   (_,$$)) }
         CONSYM          { (Consym,   (_,$$)) }
@@ -50,6 +51,8 @@ avalue                       :: { Value }
   | con                         { Con $1 [] }
   | INT                         { Other $1 }
   | FLOAT                       { Other $1 }
+  | '-' INT                     { Other $2 }
+  | '-' FLOAT                   { Other $2 }
   | STRING                      { Other $1 }
   | CHAR                        { Other $1 }
 

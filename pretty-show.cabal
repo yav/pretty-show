@@ -8,6 +8,7 @@ author:         Iavor S. Diatchki
 maintainer:     iavor.diatchki@gmail.com
 
 category:       Text
+homepage:       http://wiki.github.com/yav/pretty-show
 description:
   We provide a library and an executable for
   working with derived Show instances.  By using
@@ -33,6 +34,12 @@ library
     pretty          >= 1    && < 2
   ghc-options: -Wall
 
+  source-repository head
+    type:     git
+    location: git://github.com/yav/pretty-show.git
+
+
+
 executable ppsh
   main-is: ppsh.hs
 
@@ -48,6 +55,6 @@ executable ppsh
     pretty          >= 1    && < 2
   ghc-options: -Wall
 
-
-
-
+  source-repository head
+    type:     git
+    location: git://github.com/yav/pretty-show.git

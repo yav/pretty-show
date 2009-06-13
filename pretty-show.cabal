@@ -1,0 +1,53 @@
+name:           pretty-show
+version:        1
+synopsis:       Tools for working with derived Show instances.
+
+license:        BSD3
+license-file:   LICENSE
+author:         Iavor S. Diatchki
+maintainer:     iavor.diatchki@gmail.com
+
+category:       Text
+description:
+  We provide a library and an executable for
+  working with derived Show instances.  By using
+  the library, we can parse derived Show instances
+  into a generic data structure.  The tool uses
+  the library to produce human-readable versions
+  of Show instances, which can be quite handy
+  for debugging Haskell programs.
+
+cabal-version:  >= 1.2
+build-type:     Simple
+
+library
+  exposed-modules:
+    Text.Show.Pretty
+  other-modules:
+    Text.Show.Parser
+    Text.Show.Value
+  build-depends:
+    base            >= 3    && < 5,
+    array           >= 0.2  && < 2,
+    haskell-lexer   >= 1    && < 2,
+    pretty          >= 1    && < 2
+  ghc-options: -Wall
+
+executable ppsh
+  main-is: ppsh.hs
+
+  -- Silly.  Our real dependency is on 'pretty-show'.
+  other-modules:
+    Text.Show.Pretty
+    Text.Show.Parser
+    Text.Show.Value
+  build-depends:
+    base            >= 3    && < 5,
+    array           >= 0.2  && < 2,
+    haskell-lexer   >= 1    && < 2,
+    pretty          >= 1    && < 2
+  ghc-options: -Wall
+
+
+
+

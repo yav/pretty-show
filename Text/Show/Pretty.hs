@@ -49,10 +49,20 @@ ppValue val = case val of
 
   List vs     -> block '[' ']' (map ppValue vs)
   Tuple vs    -> block '(' ')' (map ppValue vs)
-  Other cs    -> text cs
+  Neg v       -> char '-' <> ppAtom v
+  Ratio x y   -> ppCon "(%)" [x,y]
+  Integer x   -> text x
+  Float x     -> text x
+  Char x      -> text x
+  String x    -> text x
 
 
 -- Private ---------------------------------------------------------------------
+
+ppAtom :: Value -> Doc
+ppAtom v
+  | isAtom v  = ppValue v
+  | otherwise = parens (ppValue v)
 
 ppCon :: Name -> [Value] -> Doc
 ppCon c []        = text c
@@ -67,6 +77,8 @@ ppCon c (v : vs)  = hang line1 2 (foldl addParam doc1 vs)
 
 isAtom               :: Value -> Bool
 isAtom (Con _ (_:_))  = False
+isAtom (Ratio {})     = False
+isAtom (Neg {})       = False
 isAtom _              = True
 
 block            :: Char -> Char -> [Doc] -> Doc
@@ -74,3 +86,4 @@ block a b []      = char a <> char b
 block a b (d:ds)  = char a <+> d
                  $$ vcat [ char ',' <+> x | x <- ds ]
                  $$ char b
+

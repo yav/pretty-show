@@ -18,6 +18,7 @@ import Language.Haskell.Lexer
         ']'             { (Special, (_,"]")) }
         ','             { (Special, (_,",")) }
         '-'             { (Varsym,  (_,"-")) }
+        '%'             { (Varsym,  (_,"%")) }
 
         INT             { (IntLit,   (_,$$)) }
         FLOAT           { (FloatLit, (_,$$)) }
@@ -42,6 +43,11 @@ import Language.Haskell.Lexer
 %%
 
 value                        :: { Value }
+  : value '%' app_value         { Ratio $1 $3 }
+  | '-' avalue                  { Neg $2 }
+  | app_value                   { $1 }
+
+app_value                    :: { Value }
   : con list1(avalue)           { Con $1 $2 }
   | avalue                      { $1 }
 
@@ -51,12 +57,10 @@ avalue                       :: { Value }
   | '(' tuple ')'               { Tuple $2 }
   | con '{' sep(field,',') '}'  { Rec $1 $3 }
   | con                         { Con $1 [] }
-  | INT                         { Other $1 }
-  | FLOAT                       { Other $1 }
-  | '-' INT                     { Other $2 }
-  | '-' FLOAT                   { Other $2 }
-  | STRING                      { Other $1 }
-  | CHAR                        { Other $1 }
+  | INT                         { Integer $1 }
+  | FLOAT                       { Float $1 }
+  | STRING                      { String $1 }
+  | CHAR                        { Char $1 }
 
 con                          :: { String }
   : CONID                       { $1 }

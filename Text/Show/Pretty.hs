@@ -14,13 +14,16 @@
 
 module Text.Show.Pretty
   ( Name, Value(..)
-  , parseValue, ppValue, ppDoc, ppShow
+  , parseValue, reify, ppValue, ppDoc, ppShow
   ) where
 
 import Text.PrettyPrint
 import qualified Text.Show.Parser as P
 import Text.Show.Value
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
+
+reify :: Show a => a -> Maybe Value
+reify = parseValue . show
 
 parseValue :: String -> Maybe Value
 parseValue = P.parseValue . rmSpace . lexerPass0

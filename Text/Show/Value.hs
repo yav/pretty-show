@@ -28,6 +28,6 @@ data Value    = Con Name [Value]            -- ^ Data constructor
               | Ratio Value Value           -- ^ Rational
               | Integer String              -- ^ Non-negative integer
               | Float String                -- ^ Non-negative floating num.
-              | Char String                 -- ^ Non-negative character
+              | Char String                 -- ^ Character
               | String String               -- ^ String
                 deriving (Eq,Show)

@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.1.1
+version:        1.2
 category:       Text
 
 synopsis:       Tools for working with derived Show instances.
@@ -26,6 +26,7 @@ library
   other-modules:
     Text.Show.Parser
     Text.Show.Value
+    Text.Show.DateTime
   build-depends:
     array          >= 0.2  &&  < 2,
     base           >= 3    &&  < 5,
@@ -46,6 +47,7 @@ executable ppsh
     Text.Show.Parser
     Text.Show.Pretty
     Text.Show.Value
+    Text.Show.DateTime
   build-depends:
     array          >= 0.2  &&  < 2,
     base           >= 3    &&  < 5,

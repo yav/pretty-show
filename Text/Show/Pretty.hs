@@ -20,13 +20,14 @@ module Text.Show.Pretty
 import Text.PrettyPrint
 import qualified Text.Show.Parser as P
 import Text.Show.Value
+import Text.Show.DateTime
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
 
 reify :: Show a => a -> Maybe Value
 reify = parseValue . show
 
 parseValue :: String -> Maybe Value
-parseValue = P.parseValue . rmSpace . lexerPass0
+parseValue = P.parseValue . rmSpace . parseDateTime . lexerPass0
 
 -- | Convert a generic value into a pretty 'String', if possible.
 ppShow :: Show a => a -> String

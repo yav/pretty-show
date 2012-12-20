@@ -15,11 +15,13 @@
 module Text.Show.Pretty
   ( Name, Value(..)
   , parseValue, reify, ppValue, ppDoc, ppShow
+  , PrettyVal(..), dumpDoc, dumpStr
   ) where
 
 import Text.PrettyPrint
 import qualified Text.Show.Parser as P
 import Text.Show.Value
+import Text.Show.PrettyVal
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
 
 reify :: Show a => a -> Maybe Value
@@ -39,6 +41,19 @@ ppDoc a = case parseValue txt of
             Just v  -> ppValue v
             Nothing -> text txt
   where txt = show a
+
+-- | Render a value in the 'PrettyVal' class to a 'Doc.
+-- The benefit of this function is that 'PrettyVal' instances may
+-- be derived automatically using generics.
+dumpDoc :: PrettyVal a => a -> Doc
+dumpDoc = ppValue . prettyVal
+
+-- | Render a value in the 'PrettyVal' class to a 'String'.
+-- The benefit of this function is that 'PrettyVal' instances may
+-- be derived automatically using generics.
+dumpStr :: PrettyVal a => a -> String
+dumpStr = show . dumpDoc
+
 
 
 -- | Pretty print a generic value. Our intention is that the result is

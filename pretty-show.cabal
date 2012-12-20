@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.1.1
+version:        1.2
 category:       Text
 
 synopsis:       Tools for working with derived Show instances.
@@ -17,7 +17,7 @@ maintainer:     iavor.diatchki@gmail.com
 
 homepage:       http://wiki.github.com/yav/pretty-show
 
-cabal-version:  >= 1.2
+cabal-version:  >= 1.8
 build-type:     Simple
 
 library
@@ -26,6 +26,7 @@ library
   other-modules:
     Text.Show.Parser
     Text.Show.Value
+    Text.Show.PrettyVal
   build-depends:
     array          >= 0.2  &&  < 2,
     base           >= 3    &&  < 5,
@@ -41,16 +42,12 @@ library
 executable ppsh
   main-is: ppsh.hs
 
-  -- Silly.  Our real dependency is on 'pretty-show'.
-  other-modules:
-    Text.Show.Parser
-    Text.Show.Pretty
-    Text.Show.Value
   build-depends:
-    array          >= 0.2  &&  < 2,
     base           >= 3    &&  < 5,
+    array          >= 0.2  &&  < 2,
     haskell-lexer  >= 1    &&  < 2,
-    pretty         >= 1    &&  < 2
+    pretty         >= 1    &&  < 2,
+    pretty-show
   ghc-options: -Wall
 
   source-repository head

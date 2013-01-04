@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.3.2
+version:        1.4.1
 category:       Text
 
 synopsis:       Tools for working with derived Show instances.
@@ -20,10 +20,16 @@ homepage:       http://wiki.github.com/yav/pretty-show
 cabal-version:  >= 1.8
 build-type:     Simple
 
+data-files:
+  style/jquery.js
+  style/pretty-show.js
+  style/pretty-show.css
+
 library
   exposed-modules:
     Text.Show.Pretty
   other-modules:
+    Text.Show.Html
     Text.Show.Parser
     Text.Show.Value
     Text.Show.PrettyVal
@@ -32,6 +38,7 @@ library
     base           >= 3    &&  < 5,
     haskell-lexer  >= 1    &&  < 2,
     pretty         >= 1    &&  < 2,
+    filepath,
     ghc-prim
   ghc-options: -Wall
 
@@ -39,16 +46,18 @@ library
     type:     git
     location: git://github.com/yav/pretty-show.git
 
-
 executable ppsh
   main-is: ppsh.hs
+  other-modules: Paths_pretty_show
 
   hs-source-dirs: bin
   build-depends:
-    base           >= 3    &&  < 5,
-    pretty-show
+    base          >= 3    &&  < 5,
+    pretty-show   >= 1.4.1
   ghc-options: -Wall
 
   source-repository head
     type:     git
     location: git://github.com/yav/pretty-show.git
+
+

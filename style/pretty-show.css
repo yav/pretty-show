@@ -1,0 +1,25 @@
+table.tallRecord { border: 1px solid #9c9; border-top-width: 5px }
+
+table.tallRecord>tbody>tr>th { background-color: #cfc }
+
+table.ratio>tbody>tr>td { text-align: center }
+table.ratio>tbody>tr>td.numerator { border-bottom: solid black 1px }
+
+
+table.wideTuple             { border: 1px solid #9c9 }
+table.wideTuple>tbody>tr>td { padding-left: 5px; padding-right: 5px }
+
+table.tallList>tbody>tr>th,
+table.recordList>tbody>tr>th,
+table.wideList>tbody>tr>th   { background-color: #ffc; border: 1px solid #cc9 }
+
+table.recordList>tbody>tr>th.ix,
+table.recordList>tbody>tr>th.con,
+table.tallList>tbody>tr>th.ix,
+table.tallList>tbody>tr>th.con,
+table.tallRecord>tbody>tr>th.con,
+table.tallRecord>tbody>tr>th.label,
+table.wideList>tbody>tr>th.con { cursor: hand }
+
+.con, .label, .ix { font-family: monospace; font-weight: normal }
+

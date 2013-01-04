@@ -16,12 +16,14 @@ module Text.Show.Pretty
   ( Name, Value(..)
   , parseValue, reify, ppValue, ppDoc, ppShow
   , PrettyVal(..), dumpDoc, dumpStr
+  , HtmlOpts(..), defaultHtmlOpts, dumpHtml, htmlPage, toHtml
   ) where
 
 import Text.PrettyPrint
 import qualified Text.Show.Parser as P
 import Text.Show.Value
 import Text.Show.PrettyVal
+import Text.Show.Html
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
 
 reify :: Show a => a -> Maybe Value

@@ -13,10 +13,23 @@
 
 
 module Text.Show.Pretty
-  ( Name, Value(..)
-  , parseValue, reify, ppValue, ppDoc, ppShow
-  , PrettyVal(..), dumpDoc, dumpStr
-  , HtmlOpts(..), defaultHtmlOpts, dumpHtml, htmlPage, toHtml
+  ( -- * Generic representation of values
+    Value(..), Name
+  , valToStr
+  , valToDoc
+  , valToHtmlPage
+
+    -- * Values using the 'Show' class
+  , parseValue, reify, ppDoc, ppShow
+
+    -- * Values using the 'PrettyVal' class
+  , dumpDoc, dumpStr, PrettyVal(..)
+
+    -- * Rendering values to Html
+  , valToHtml, HtmlOpts(..), defaultHtmlOpts, htmlPage, Html(..)
+
+    -- * Deprecated
+  , ppValue
   ) where
 
 import Text.PrettyPrint
@@ -25,6 +38,10 @@ import Text.Show.Value
 import Text.Show.PrettyVal
 import Text.Show.Html
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
+
+{-# DEPRECATED ppValue "Please use `valToDoc` instead." #-}
+ppValue :: Value -> Doc
+ppValue = valToDoc
 
 reify :: Show a => a -> Maybe Value
 reify = parseValue . show
@@ -40,15 +57,15 @@ ppShow = show . ppDoc
 --   just use its standard 'Show' instance.
 ppDoc :: Show a => a -> Doc
 ppDoc a = case parseValue txt of
-            Just v  -> ppValue v
+            Just v  -> valToDoc v
             Nothing -> text txt
   where txt = show a
 
--- | Render a value in the 'PrettyVal' class to a 'Doc.
+-- | Render a value in the 'PrettyVal' class to a 'Doc'.
 -- The benefit of this function is that 'PrettyVal' instances may
 -- be derived automatically using generics.
 dumpDoc :: PrettyVal a => a -> Doc
-dumpDoc = ppValue . prettyVal
+dumpDoc = valToDoc . prettyVal
 
 -- | Render a value in the 'PrettyVal' class to a 'String'.
 -- The benefit of this function is that 'PrettyVal' instances may
@@ -57,18 +74,23 @@ dumpStr :: PrettyVal a => a -> String
 dumpStr = show . dumpDoc
 
 
+-- | Pretty print a generic value. Our intention is that the result is
+--   equivalent to the 'Show' instance for the original value, except possibly
+--   easier to understand by a human.
+valToStr :: Value -> String
+valToStr = show . valToDoc
 
 -- | Pretty print a generic value. Our intention is that the result is
 --   equivalent to the 'Show' instance for the original value, except possibly
 --   easier to understand by a human.
-ppValue :: Value -> Doc
-ppValue val = case val of
+valToDoc :: Value -> Doc
+valToDoc val = case val of
   Con c vs    -> ppCon c vs
   Rec c fs    -> hang (text c) 2 $ block '{' '}' (map ppField fs)
-    where ppField (x,v) = text x <+> char '=' <+> ppValue v
+    where ppField (x,v) = text x <+> char '=' <+> valToDoc v
 
-  List vs     -> block '[' ']' (map ppValue vs)
-  Tuple vs    -> block '(' ')' (map ppValue vs)
+  List vs     -> block '[' ']' (map valToDoc vs)
+  Tuple vs    -> block '(' ')' (map valToDoc vs)
   Neg v       -> char '-' <> ppAtom v
   Ratio x y   -> ppCon "(%)" [x,y]
   Integer x   -> text x
@@ -81,19 +103,19 @@ ppValue val = case val of
 
 ppAtom :: Value -> Doc
 ppAtom v
-  | isAtom v  = ppValue v
-  | otherwise = parens (ppValue v)
+  | isAtom v  = valToDoc v
+  | otherwise = parens (valToDoc v)
 
 ppCon :: Name -> [Value] -> Doc
 ppCon c []        = text c
 ppCon c (v : vs)  = hang line1 2 (foldl addParam doc1 vs)
   where (line1,doc1)
-          | isAtom v   = (text c, ppValue v)
-          | otherwise  = (text c <+> char '(', ppValue v <+> char ')')
+          | isAtom v   = (text c, valToDoc v)
+          | otherwise  = (text c <+> char '(', valToDoc v <+> char ')')
 
         addParam d p
-          | isAtom p  = d $$ ppValue p
-          | otherwise = (d <+> char '(') $$ (ppValue p <+> char ')')
+          | isAtom p  = d $$ valToDoc p
+          | otherwise = (d <+> char '(') $$ (valToDoc p <+> char ')')
 
 isAtom               :: Value -> Bool
 isAtom (Con _ (_:_))  = False

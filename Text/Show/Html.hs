@@ -1,75 +1,79 @@
 module Text.Show.Html
   ( HtmlOpts(..), defaultHtmlOpts
-  , dumpHtml, toHtml, htmlPage, Html
+  , valToHtml, valToHtmlPage, htmlPage
+  , Html(..)
   ) where
 
 import Text.Show.Value
 import Prelude hiding (span)
 
 -- | Make an Html page representing the given value.
-dumpHtml :: HtmlOpts -> Value -> Html
-dumpHtml opts = htmlPage opts . toHtml opts
+valToHtmlPage :: HtmlOpts -> Value -> String
+valToHtmlPage opts = htmlPage opts . valToHtml opts
 
 -- | Options on how to generate Html (more to come).
 data HtmlOpts = HtmlOpts
-  { dataDir :: FilePath   -- | Path for extra files.  If empty, we look in
+  { dataDir :: FilePath   -- ^ Path for extra files.  If empty, we look in
                           -- directory `style`, relative to document.
-  }
+  , wideListWidth :: Int  -- ^ Max. number of columns in wide lists.
+  } deriving Show
 
--- | Default options: path is relative.
+-- | Default options.
 defaultHtmlOpts :: HtmlOpts
 defaultHtmlOpts = HtmlOpts
-  { dataDir = ""
+  { dataDir       = ""
+  , wideListWidth = 80
   }
 
 -- | Convert a value into an Html fragment.
-toHtml :: HtmlOpts -> Value -> Html
-toHtml opts val =
-  case val of
-    Con con []  -> span "con" (text con)
-    Con con vs  -> tallRecord con (map conLab vs) (map (toHtml opts) vs)
-    Rec con fs  -> tallRecord con (map fst fs) (map (toHtml opts . snd) fs)
-    Tuple vs    -> wideTuple (map (toHtml opts) vs)
-
-    List []     -> span "list" (text "[]")
-    List vs@(v : vs1) ->
-      case v of
-
-        Con c fs
-          | all (isCon c) vs1  -> recordList c (map conLab fs)
-                                   [ map (toHtml opts) xs | Con _ xs <- vs ]
-          | otherwise          -> tallList $ map (toHtml opts) vs
-
-        Rec c fs
-          | all (isRec c) vs1   -> recordList c (map fst fs)
-                                 [ map (toHtml opts . snd) xs | Rec _ xs <- vs ]
-          | otherwise           -> tallList $ map (toHtml opts) vs
-
-        Tuple fs -> tupleList (length fs)
-                          [ map (toHtml opts) xs | Tuple xs <- vs ]
-
-        List {}    -> tallList    $ map (toHtml opts) vs
-
-        Neg {}     -> wideList 80 $ map (toHtml opts) vs
-        Ratio {}   -> wideList 80 $ map (toHtml opts) vs
-        Integer {} -> wideList 80 $ map (toHtml opts) vs
-        Float {}   -> wideList 80 $ map (toHtml opts) vs
-        Char {}    -> wideList 80 $ map (toHtml opts) vs
-        String {}  -> tallList    $ map (toHtml opts) vs
-
-    Neg v       ->
-      case v of
-        Integer txt -> span "integer" ('-' : txt)
-        Float txt   -> span "float"   ('-' : txt)
-        _           -> neg (toHtml opts v)
-
-    Ratio v1 v2 -> ratio (toHtml opts v1) (toHtml opts v2)
-    Integer txt -> span "integer" (text txt)
-    Float txt   -> span "float"   (text txt)
-    Char txt    -> span "char"    (text txt)
-    String txt  -> span "string"  (text txt)
-
+valToHtml :: HtmlOpts -> Value -> Html
+valToHtml opts = loop
   where
+  loop val =
+    case val of
+      Con con []  -> span "con" (text con)
+      Con con vs  -> tallRecord con (map conLab vs) (map loop         vs)
+      Rec con fs  -> tallRecord con (map fst fs)    (map (loop . snd) fs)
+      Tuple vs    -> wideTuple                      (map loop vs)
+
+      List []     -> span "list" (text "[]")
+      List vs@(v : vs1) ->
+        case v of
+
+          Con c fs
+            | all (isCon c) vs1  -> recordList c (map conLab fs)
+                                     [ map loop xs | Con _ xs <- vs ]
+            | otherwise          -> tallList $ map (loop) vs
+
+          Rec c fs
+            | all (isRec c) vs1   -> recordList c (map fst fs)
+                                   [ map (loop . snd) xs | Rec _ xs <- vs ]
+            | otherwise           -> tallList $ map (loop) vs
+
+          Tuple fs -> tupleList (length fs)
+                            [ map (loop) xs | Tuple xs <- vs ]
+
+          List {}    -> tallList    $ map loop vs
+
+          Neg {}     -> wideList (wideListWidth opts) $ map loop vs
+          Ratio {}   -> wideList (wideListWidth opts) $ map loop vs
+          Integer {} -> wideList (wideListWidth opts) $ map loop vs
+          Float {}   -> wideList (wideListWidth opts) $ map loop vs
+          Char {}    -> wideList (wideListWidth opts) $ map loop vs
+          String {}  -> tallList                      $ map loop vs
+
+      Neg v       ->
+        case v of
+          Integer txt -> span "integer" $ text ('-' : txt)
+          Float txt   -> span "float"   $ text ('-' : txt)
+          _           -> neg (loop v)
+
+      Ratio v1 v2 -> ratio (loop v1) (loop v2)
+      Integer txt -> span "integer" (text txt)
+      Float txt   -> span "float"   (text txt)
+      Char txt    -> span "char"    (text txt)
+      String txt  -> span "string"  (text txt)
+
   conLab _          = " "
 
   isCon c (Con d _) = c == d
@@ -127,37 +131,43 @@ wideList w els = table "wideList" $ topHs : zipWith row [0..] (chop els)
   row n es  = tr $ (th "ix" 1 (int (n*w))) : map td es
 
 --------------------------------------------------------------------------------
-type Html = String
+newtype Html = Html { exportHtml :: String }
 
 table :: String -> [Html] -> Html
-table cl body = "<table class=" ++ show cl ++ ">" ++ concat body ++ "</table>"
+table cl body = Html $ "<table class=" ++ show cl ++ ">" ++
+                       concatMap exportHtml body ++
+                       "</table>"
 
 tr :: [Html] -> Html
-tr body = "<tr>" ++ concat body ++ "</tr>"
+tr body = Html $ "<tr>" ++ concatMap exportHtml body ++ "</tr>"
 
 th :: String -> Int -> Html -> Html
-th cl n body = "<th class=" ++ show cl ++ " colspan=" ++ show (show n) ++ ">"
-                                          ++ body ++ "</th>"
+th cl n body = Html $ "<th class=" ++ show cl ++
+                         " colspan=" ++ show (show n) ++ ">" ++
+                      exportHtml body ++
+                      "</th>"
 
 td :: Html -> Html
-td body = "<td>" ++ body ++ "</td>"
+td body = Html $ "<td>" ++ exportHtml body ++ "</td>"
 
 td' :: String -> Html -> Html
-td' cl body = "<td class=" ++ show cl ++ ">" ++ body ++ "</td>"
-
-
+td' cl body = Html $ "<td class=" ++ show cl ++ ">" ++
+                     exportHtml body ++
+                     "</td>"
 
 span :: String -> Html -> Html
-span cl body = "<span class=" ++ show cl ++ ">" ++ body ++ "</span>"
+span cl body = Html $ "<span class=" ++ show cl ++ ">" ++
+                      exportHtml body ++
+                      "</span>"
 
 empty :: Html
-empty = ""
+empty = Html  ""
 
 int :: Int -> Html
-int = show
+int = Html . show
 
 text :: String -> Html
-text = concatMap esc
+text = Html . concatMap esc
   where
   esc '<' = "&lt;"
   esc '>' = "&gt;"
@@ -166,7 +176,7 @@ text = concatMap esc
   esc c   = [c]
 
 -- | Wrap an Html fragment to make an Html page.
-htmlPage :: HtmlOpts -> Html -> Html
+htmlPage :: HtmlOpts -> Html -> String
 htmlPage opts body =
   unlines
   [ "<html>"
@@ -175,7 +185,7 @@ htmlPage opts body =
   , "<script src=" ++ show jquery ++ "></script>"
   , "<script src=" ++ show pjs    ++ "></script>"
   , "<body>"
-  , body
+  , exportHtml  body
   , "</body>"
   , "</html>"
   ]

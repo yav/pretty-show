@@ -15,11 +15,11 @@ main =
               Just v  ->
                 do dir <- getDataDir
                    let opts = defaultHtmlOpts { dataDir = dir }
-                   putStrLn (dumpHtml opts v)
+                   putStrLn (valToHtmlPage opts v)
               Nothing -> hPutStrLn stderr "Failed to parse value."
 
        []         -> interactLn $ \s -> case parseValue s of
-                                          Just v  -> show (ppValue v)
+                                          Just v  -> show (valToDoc v)
                                           Nothing -> s
        _ -> hPutStrLn stderr $ unlines
               [ "usage: ppsh < showed_value > pretty_value"
@@ -32,7 +32,7 @@ interactLn :: (String -> String) -> IO ()
 interactLn f = interact f >> putStrLn ""
 
 selftest :: Value -> Bool
-selftest v = case parseValue $ show $ ppValue v of
+selftest v = case parseValue $ show $ valToDoc v of
                Just v1  -> v1 == v
                Nothing  -> False
 

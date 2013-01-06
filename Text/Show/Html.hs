@@ -1,24 +1,28 @@
 module Text.Show.Html
   ( HtmlOpts(..), defaultHtmlOpts
-  , dumpHtml, toHtml, htmlPage
+  , dumpHtml, toHtml, htmlPage, Html
   ) where
 
 import Text.Show.Value
 import Prelude hiding (span)
 
+-- | Make an Html page representing the given value.
 dumpHtml :: HtmlOpts -> Value -> Html
 dumpHtml opts = htmlPage opts . toHtml opts
 
+-- | Options on how to generate Html (more to come).
 data HtmlOpts = HtmlOpts
-  { dataDir :: FilePath
+  { dataDir :: FilePath   -- | Path for extra files.  If empty, we look in
+                          -- directory `style`, relative to document.
   }
 
+-- | Default options: path is relative.
 defaultHtmlOpts :: HtmlOpts
 defaultHtmlOpts = HtmlOpts
   { dataDir = ""
   }
 
-
+-- | Convert a value into an Html fragment.
 toHtml :: HtmlOpts -> Value -> Html
 toHtml opts val =
   case val of
@@ -161,6 +165,7 @@ text = concatMap esc
   esc ' ' = "&nbsp;"
   esc c   = [c]
 
+-- | Wrap an Html fragment to make an Html page.
 htmlPage :: HtmlOpts -> Html -> Html
 htmlPage opts body =
   unlines
@@ -175,10 +180,12 @@ htmlPage opts body =
   , "</html>"
   ]
   where
-  dir    = dataDir opts
   -- XXX: slashes on Windows?
-  jquery = dir ++ "/style/jquery.js"
-  pjs    = dir ++ "/style/pretty-show.js"
-  pstyle = dir ++ "/style/pretty-show.css"
+  dir    = case dataDir opts of
+             "" -> ""
+             d  -> d ++ "/"
+  jquery = dir ++ "style/jquery.js"
+  pjs    = dir ++ "style/pretty-show.js"
+  pstyle = dir ++ "style/pretty-show.css"
 
 

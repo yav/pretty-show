@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.4.1
+version:        1.5
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic

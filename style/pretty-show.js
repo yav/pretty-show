@@ -1,11 +1,13 @@
 function toggle_con(obj) {
   var x = $(obj.currentTarget);
+  x.toggleClass("closed");
   x.parent().siblings().fadeToggle();
   x.siblings().fadeToggle();
 }
 
 function toggle_lab(obj) {
   var x = $(obj.currentTarget);
+  x.toggleClass("closed");
   x.siblings().fadeToggle();
   }
 

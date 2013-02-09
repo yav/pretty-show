@@ -28,6 +28,9 @@ module Text.Show.Pretty
     -- * Rendering values to Html
   , valToHtml, HtmlOpts(..), defaultHtmlOpts, htmlPage, Html(..)
 
+    -- * Get location of data files
+  , getDataDir
+
     -- * Deprecated
   , ppValue
   ) where
@@ -38,6 +41,7 @@ import Text.Show.Value
 import Text.Show.PrettyVal
 import Text.Show.Html
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
+import Paths_pretty_show (getDataDir)
 
 {-# DEPRECATED ppValue "Please use `valToDoc` instead." #-}
 ppValue :: Value -> Doc

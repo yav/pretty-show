@@ -1,7 +1,6 @@
 import Text.Show.Pretty
 import System.Environment
 import System.IO(hPutStrLn,stderr)
-import Paths_pretty_show
 
 main :: IO ()
 main =

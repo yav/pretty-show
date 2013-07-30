@@ -19,6 +19,7 @@ import Language.Haskell.Lexer
         ','             { (Special, (_,",")) }
         '-'             { (Varsym,  (_,"-")) }
         '%'             { (Varsym,  (_,"%")) }
+        '`'             { (Special, (_,"`")) }
 
         INT             { (IntLit,   (_,$$)) }
         FLOAT           { (FloatLit, (_,$$)) }
@@ -46,6 +47,10 @@ value                        :: { Value }
   : value '%' app_value         { Ratio $1 $3 }
   | '-' avalue                  { Neg $2 }
   | app_value                   { $1 }
+  | app_value list1(infixelem)  { InfixCons $1 $2 }
+
+infixelem                    :: { (String,Value) }
+  : infixcon app_value          { ($1,$2) }
 
 app_value                    :: { Value }
   : con list1(avalue)           { Con $1 $2 }
@@ -73,13 +78,18 @@ con                          :: { String }
   | prefix(VARSYM)              { $1 }
   | prefix(QVARSYM)             { $1 }
 
+infixcon                     :: { String }
+  : CONSYM                      { $1 }
+  | QCONSYM                     { $1 }
+  | '`' CONID '`'               { backtick $2 }
+  | '`' QCONID '`'              { backtick $2 }
+
 field                        :: { (Name,Value) }
   : VARID '=' value             { ($1,$3) }
 
 tuple                        :: { [Value] }
   :                             { [] }
   | value ',' sep1(value,',')   { $1 : $3 }
-
 
 -- Common Rule Patterns --------------------------------------------------------
 prefix(p)       : '(' p ')'           { "(" ++ $2 ++ ")" }
@@ -99,8 +109,10 @@ rev_list1(p)    : p                   { [$1] }
 
 
 
-
 {
+backtick :: String -> String
+backtick s = "`" ++ s ++ "`"
+
 happyError :: [PosToken] -> Maybe a
 happyError ((_,(p,_)) : _) = Nothing -- error ("Parser error at: " ++ show p)
 happyError []              = Nothing -- error ("Parser error at EOF")

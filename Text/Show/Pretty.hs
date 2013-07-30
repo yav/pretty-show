@@ -85,18 +85,26 @@ valToStr = show . valToDoc
 --   easier to understand by a human.
 valToDoc :: Value -> Doc
 valToDoc val = case val of
-  Con c vs    -> ppCon c vs
-  Rec c fs    -> hang (text c) 2 $ block '{' '}' (map ppField fs)
+  Con c vs         -> ppCon c vs
+  InfixCons v1 cvs -> hang_sep (go v1 cvs)
+    where
+      go v []            = [ppInfixAtom v]
+      go v ((n,v2):cvs') = (ppInfixAtom v <+> text n):go v2 cvs'
+
+      hang_sep [] = empty
+      hang_sep (x:xs) = hang x 2 (sep xs)
+    -- hang (ppInfixAtom v1) 2 (sep [ text n <+> ppInfixAtom v | (n,v) <- cvs ])
+  Rec c fs         -> hang (text c) 2 $ block '{' '}' (map ppField fs)
     where ppField (x,v) = text x <+> char '=' <+> valToDoc v
 
-  List vs     -> block '[' ']' (map valToDoc vs)
-  Tuple vs    -> block '(' ')' (map valToDoc vs)
-  Neg v       -> char '-' <> ppAtom v
-  Ratio x y   -> ppCon "(%)" [x,y]
-  Integer x   -> text x
-  Float x     -> text x
-  Char x      -> text x
-  String x    -> text x
+  List vs          -> block '[' ']' (map valToDoc vs)
+  Tuple vs         -> block '(' ')' (map valToDoc vs)
+  Neg v            -> char '-' <> ppAtom v
+  Ratio x y        -> ppCon "(%)" [x,y]
+  Integer x        -> text x
+  Float x          -> text x
+  Char x           -> text x
+  String x         -> text x
 
 
 -- Private ---------------------------------------------------------------------
@@ -105,6 +113,11 @@ ppAtom :: Value -> Doc
 ppAtom v
   | isAtom v  = valToDoc v
   | otherwise = parens (valToDoc v)
+
+ppInfixAtom :: Value -> Doc
+ppInfixAtom v
+  | isInfixAtom v = valToDoc v
+  | otherwise     = parens (valToDoc v)
 
 ppCon :: Name -> [Value] -> Doc
 ppCon c []        = text c
@@ -119,9 +132,17 @@ ppCon c (v : vs)  = hang line1 2 (foldl addParam doc1 vs)
 
 isAtom               :: Value -> Bool
 isAtom (Con _ (_:_))  = False
+isAtom (InfixCons {}) = False
 isAtom (Ratio {})     = False
 isAtom (Neg {})       = False
 isAtom _              = True
+
+-- Don't put parenthesis around constructors in infix chains
+isInfixAtom          :: Value -> Bool
+isInfixAtom (InfixCons {}) = False
+isInfixAtom (Ratio {})     = False
+isInfixAtom (Neg {})       = False
+isInfixAtom _              = True
 
 block            :: Char -> Char -> [Doc] -> Doc
 block a b []      = char a <> char b

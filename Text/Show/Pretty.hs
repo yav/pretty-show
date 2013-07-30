@@ -95,7 +95,7 @@ valToDoc val = case val of
       hang_sep (x:xs) = hang x 2 (sep xs)
     -- hang (ppInfixAtom v1) 2 (sep [ text n <+> ppInfixAtom v | (n,v) <- cvs ])
   Rec c fs         -> hang (text c) 2 $ block '{' '}' (map ppField fs)
-    where ppField (x,v) = text x <+> char '=' <+> valToDoc v
+    where ppField (x,v) = hang (text x <+> char '=') 2 (valToDoc v)
 
   List vs          -> block '[' ']' (map valToDoc vs)
   Tuple vs         -> block '(' ')' (map valToDoc vs)
@@ -120,15 +120,7 @@ ppInfixAtom v
   | otherwise     = parens (valToDoc v)
 
 ppCon :: Name -> [Value] -> Doc
-ppCon c []        = text c
-ppCon c (v : vs)  = hang line1 2 (foldl addParam doc1 vs)
-  where (line1,doc1)
-          | isAtom v   = (text c, valToDoc v)
-          | otherwise  = (text c <+> char '(', valToDoc v <+> char ')')
-
-        addParam d p
-          | isAtom p  = d $$ valToDoc p
-          | otherwise = (d <+> char '(') $$ (valToDoc p <+> char ')')
+ppCon c vs = hang (text c) 2 (sep (map ppAtom vs))
 
 isAtom               :: Value -> Bool
 isAtom (Con _ (_:_))  = False
@@ -146,7 +138,6 @@ isInfixAtom _              = True
 
 block            :: Char -> Char -> [Doc] -> Doc
 block a b []      = char a <> char b
-block a b (d:ds)  = char a <+> d
-                 $$ vcat [ char ',' <+> x | x <- ds ]
-                 $$ char b
+block a b (d:ds)  = sep $
+    (char a <+> d) : [ char ',' <+> x | x <- ds ] ++ [ char b ]
 

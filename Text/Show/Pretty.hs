@@ -100,7 +100,7 @@ valToDoc val = case val of
   List vs          -> block '[' ']' (map valToDoc vs)
   Tuple vs         -> block '(' ')' (map valToDoc vs)
   Neg v            -> char '-' <> ppAtom v
-  Ratio x y        -> ppCon "(%)" [x,y]
+  Ratio x y        -> hang (ppAtom x <+> text "%") 2 (ppAtom y)
   Integer x        -> text x
   Float x          -> text x
   Char x           -> text x

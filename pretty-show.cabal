@@ -35,6 +35,7 @@ library
     Text.Show.Parser
     Text.Show.Value
     Text.Show.PrettyVal
+    Paths_pretty_show
   build-depends:
     array          >= 0.2  &&  < 2,
     base           >= 3    &&  < 5,

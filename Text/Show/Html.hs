@@ -36,6 +36,11 @@ valToHtml opts = loop
       Rec con fs  -> tallRecord con (map fst fs)    (map (loop . snd) fs)
       Tuple vs    -> wideTuple                      (map loop vs)
 
+      InfixCons v ms ->
+        table "infix"
+          [ tr $ map td $ loop v : [ h | (op,u) <- ms
+                                       , h      <- [ text op, loop u ] ] ]
+
       List []     -> span "list" (text "[]")
       List vs@(v : vs1) ->
         case v of
@@ -61,6 +66,7 @@ valToHtml opts = loop
           Float {}   -> wideList (wideListWidth opts) $ map loop vs
           Char {}    -> wideList (wideListWidth opts) $ map loop vs
           String {}  -> tallList                      $ map loop vs
+          InfixCons {} -> tallList                    $ map loop vs
 
       Neg v       ->
         case v of

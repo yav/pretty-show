@@ -37,9 +37,12 @@ valToHtml opts = loop
       Tuple vs    -> wideTuple                      (map loop vs)
 
       InfixCons v ms ->
-        table "infix"
-          [ tr $ map td $ loop v : [ h | (op,u) <- ms
-                                       , h      <- [ text op, loop u ] ] ]
+        table "infix tallRecord"
+          [ tr $ (th "label" 1 (text " ") :)
+               $ map td $ loop v : [ h | (op,u) <- ms
+                                   , h <- [ text op, loop u ]
+                                   ]
+          ]
 
       List []     -> span "list" (text "[]")
       List vs@(v : vs1) ->

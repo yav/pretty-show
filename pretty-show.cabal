@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.6.1
+version:        1.6.2
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic
@@ -43,7 +43,8 @@ library
     pretty         >= 1    &&  < 2,
     filepath,
     ghc-prim
-  ghc-options: -Wall
+  ghc-options: -Wall -O2
+  build-tools: happy >= 1.19
 
   source-repository head
     type:     git
@@ -56,7 +57,7 @@ executable ppsh
   hs-source-dirs: bin
   build-depends:
     base          >= 3    &&  < 5,
-    pretty-show   >= 1.4.1
+    pretty-show   == 1.6.2
   ghc-options: -Wall
 
   source-repository head

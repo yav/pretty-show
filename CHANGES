@@ -1,0 +1,7 @@
+Changes in 1.6.3:
+  * Add Safe Haskell annotations
+  * Add CHANGES file
+  * Add generated parser to package again.  We do this, because otherwise
+    the package fails to build on systems that do not have `happy`.
+    This is a bit questionable, but hopefully it won't be too much of
+    a problem.

@@ -11,7 +11,7 @@
 -- Functions for human-readable derived 'Show' instances.
 --------------------------------------------------------------------------------
 
-
+{-# LANGUAGE Safe #-}
 module Text.Show.Pretty
   ( -- * Generic representation of values
     Value(..), Name

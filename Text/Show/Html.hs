@@ -1,3 +1,4 @@
+{-# LANGUAGE Safe #-}
 module Text.Show.Html
   ( HtmlOpts(..), defaultHtmlOpts
   , valToHtml, valToHtmlPage, htmlPage

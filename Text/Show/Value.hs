@@ -11,7 +11,7 @@
 -- Generic representation of Showable values.
 --------------------------------------------------------------------------------
 
-
+{-# LANGUAGE Safe #-}
 module Text.Show.Value ( Name, Value(..) ) where
 
 -- | A name.

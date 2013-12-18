@@ -1,6 +1,6 @@
 {
 -- We use these options because Happy generates code with a lot of warnings.
-{-# OPTIONS_GHC -w #-}
+{-# LANGUAGE Trustworthy #-}
 module Text.Show.Parser (parseValue) where
 
 import Text.Show.Value

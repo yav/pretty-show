@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.6.5
+version:        1.6.6
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic
@@ -24,6 +24,7 @@ build-type:     Simple
 
 data-files:
   style/jquery.js
+  style/jquery-src.js
   style/pretty-show.js
   style/pretty-show.css
 
@@ -57,7 +58,7 @@ executable ppsh
   hs-source-dirs: bin
   build-depends:
     base          >= 3    &&  < 5,
-    pretty-show   == 1.6.5
+    pretty-show   == 1.6.6
   ghc-options: -Wall
 
   source-repository head

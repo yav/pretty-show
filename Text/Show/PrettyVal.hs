@@ -1,22 +1,29 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE Safe #-}
+#ifndef NO_GENERICS
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
 {-# LANGUAGE DefaultSignatures #-}
+#endif
 module Text.Show.PrettyVal ( PrettyVal(prettyVal) ) where
 
+import Text.Show.Value
+
+#ifndef NO_GENERICS
 import Data.Ratio
 import Data.Word
 import Data.Int
-
-import Text.Show.Value
 import GHC.Generics
+#endif
 
 -- | A class for types that may be reified into a value.
 -- Instances of this class may be derived automatically,
 -- for datatypes that support `Generics`.
 class PrettyVal a where
-  prettyVal   :: a -> Value
+  prettyVal :: a -> Value
   listValue :: [a] -> Value
+
+#ifndef NO_GENERICS
 
   default prettyVal :: (GDump (Rep a), Generic a) => a -> Value
   prettyVal = oneVal . gdump . from
@@ -113,4 +120,5 @@ instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
 instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
           PrettyVal a4, PrettyVal a5, PrettyVal a6, PrettyVal a7)
   => PrettyVal (a1,a2,a3,a4,a5,a6,a7)
+#endif
 

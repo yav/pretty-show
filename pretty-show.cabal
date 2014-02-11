@@ -46,7 +46,7 @@ library
     ghc-prim
   ghc-options: -Wall -O2
   if impl(ghc < 7.4)
-    ghc-options: -DNO_GENERICS
+    cpp-options: -DNO_GENERICS
   build-tools: happy
 
   source-repository head

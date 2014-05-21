@@ -1,3 +1,6 @@
+Changes in 1.6.8:
+  * Move source-repository pragma to top-level.
+
 Changes in 1.6.5:
   * Rename CHANGES to CHANGELOG to work with hackage.
 

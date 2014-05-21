@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.6.7
+version:        1.6.8
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic
@@ -49,10 +49,6 @@ library
     cpp-options: -DNO_GENERICS
   build-tools: happy
 
-  source-repository head
-    type:     git
-    location: git://github.com/yav/pretty-show.git
-
 executable ppsh
   main-is: ppsh.hs
   other-modules: Paths_pretty_show
@@ -60,11 +56,11 @@ executable ppsh
   hs-source-dirs: bin
   build-depends:
     base          >= 3    &&  < 5,
-    pretty-show   == 1.6.7
+    pretty-show   == 1.6.8
   ghc-options: -Wall
 
-  source-repository head
-    type:     git
-    location: git://github.com/yav/pretty-show.git
+source-repository head
+  type:     git
+  location: git://github.com/yav/pretty-show.git
 
 

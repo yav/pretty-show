@@ -28,6 +28,9 @@ data-files:
   style/pretty-show.js
   style/pretty-show.css
 
+extra-source-files:
+  CHANGES
+
 library
   exposed-modules:
     Text.Show.Pretty

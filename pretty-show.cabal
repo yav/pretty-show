@@ -29,7 +29,7 @@ data-files:
   style/pretty-show.css
 
 extra-source-files:
-  CHANGES
+  CHANGELOG
 
 library
   exposed-modules:

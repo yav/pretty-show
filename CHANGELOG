@@ -1,3 +1,6 @@
+Changes in 1.6.8.1:
+  * Correct the 'License' field in the Cabal file to match the license (MIT)
+
 Changes in 1.6.8:
   * Move source-repository pragma to top-level.
 

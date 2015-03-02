@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.6.8
+version:        1.6.8.1
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic
@@ -12,7 +12,7 @@ description:
   debugging Haskell programs.  We can also render complex generic values into
   an interactive Html page, for easier examination.
 
-license:        BSD3
+license:        MIT
 license-file:   LICENSE
 author:         Iavor S. Diatchki
 maintainer:     iavor.diatchki@gmail.com
@@ -59,7 +59,7 @@ executable ppsh
   hs-source-dirs: bin
   build-depends:
     base          >= 3    &&  < 5,
-    pretty-show   == 1.6.8
+    pretty-show   == 1.6.8.1
   ghc-options: -Wall
 
 source-repository head

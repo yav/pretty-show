@@ -2,7 +2,7 @@
 -- |
 -- Module      :  Text.Show.Pretty
 -- Copyright   :  (c) Iavor S. Diatchki 2009
--- License     :  BSD3
+-- License     :  MIT
 --
 -- Maintainer  :  iavor.diatchki@gmail.com
 -- Stability   :  provisional

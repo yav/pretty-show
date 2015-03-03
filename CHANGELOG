@@ -1,3 +1,6 @@
+Changes in 1.6.8.2:
+  * Correct license in srouce files.
+
 Changes in 1.6.8.1:
   * Correct the 'License' field in the Cabal file to match the license (MIT)
 

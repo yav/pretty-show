@@ -42,7 +42,7 @@ library
     Paths_pretty_show
   build-depends:
     array          >= 0.2  &&  < 2,
-    base           >= 3    &&  < 5,
+    base           >= 4.5  &&  < 5,
     haskell-lexer  >= 1    &&  < 2,
     pretty         >= 1    &&  < 2,
     filepath,
@@ -58,7 +58,7 @@ executable ppsh
 
   hs-source-dirs: bin
   build-depends:
-    base          >= 3    &&  < 5,
+    base          >= 4.5  &&  < 5,
     pretty-show   == 1.6.8.2
   ghc-options: -Wall
 

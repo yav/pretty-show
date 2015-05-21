@@ -1,13 +1,10 @@
-{-# LANGUAGE FlexibleInstances #-}
 module Main where
 
-import Text.Show.Pretty (ppShow,reify,parseValue)
+import Text.Show.Pretty (ppShow,reify)
 import Text.Show.PrettyFunctions ()
 import Test.QuickCheck
 import Data.Maybe
 import Control.Monad
-
-import Control.Applicative
 
 infixr 4 :+:
 infixl 3 :$:
@@ -34,8 +31,16 @@ data D2
     | Int Int
     | L [D2]
     | T (D2,D2)
-    | F (Int -> Int)
+    | F Fun
   deriving (Eq,Show,Read)
+
+newtype Fun = Fun (Int -> Int) deriving Show
+
+instance Eq Fun where
+  _ == _ = True
+
+instance Read Fun where
+  readsPrec p = readParen (p > 10) $ \str -> [(Fun id, str2) | ("Fun", str1) <- lex str, ("_fn", str2) <- lex str1]
 
 newtype Floaty = Floaty Float
   deriving (Show,Read)
@@ -52,13 +57,6 @@ instance Arbitrary Floaty where
     ,(1,return $ Floaty (1/0))
     ,(1,return $ Floaty ((-1)/0))
     ]
-
-
-instance Eq (a -> a) where
-  (==) _ _ = True
-
-instance Read (a -> a) where
-  readsPrec _ str = [ (id, rest) | ("_fn", rest) <- lex str ]
 
 
 arbD :: Int -> Gen D
@@ -78,7 +76,7 @@ arbD2 s = frequency $
     , (1,String <$> arbitrary)
     , (1,Ratio <$> arbitrary)
     , (1,Float <$> arbitrary)
-    , (1,pure $ F id)
+    , (1,pure $ F $ Fun id)
     , (s,K <$> arbD2 s')
     , (s,do
         l <- choose (0,3)

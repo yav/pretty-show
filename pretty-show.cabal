@@ -34,6 +34,7 @@ extra-source-files:
 library
   exposed-modules:
     Text.Show.Pretty
+    Text.Show.PrettyFunctions
   other-modules:
     Text.Show.Html
     Text.Show.Parser

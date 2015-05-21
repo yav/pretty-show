@@ -1,7 +1,7 @@
 module Main where
 
 import Text.Show.Pretty (ppShow,reify)
-import Text.Show.PrettyFunctions ()
+import Text.Show.Pretty.Functions ()
 import Test.QuickCheck
 import Data.Maybe
 import Control.Monad

@@ -120,5 +120,11 @@ instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
 instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
           PrettyVal a4, PrettyVal a5, PrettyVal a6, PrettyVal a7)
   => PrettyVal (a1,a2,a3,a4,a5,a6,a7)
+
+instance PrettyVal Bool
+instance PrettyVal Ordering
+instance PrettyVal a => PrettyVal (Maybe a)
+instance (PrettyVal a, PrettyVal b) => PrettyVal (Either a b)
+
 #endif
 

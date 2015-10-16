@@ -53,8 +53,8 @@ infixelem                    :: { (String,Value) }
   : infixcon app_value          { ($1,$2) }
 
 app_value                    :: { Value }
-  : con list1(avalue)           { Con $1 $2 }
-  | avalue                      { $1 }
+  : list1(avalue)               { mkValue $1 }
+
 
 avalue                       :: { Value }
   : '(' value ')'               { $2 }
@@ -116,4 +116,9 @@ backtick s = "`" ++ s ++ "`"
 happyError :: [PosToken] -> Maybe a
 happyError ((_,(p,_)) : _) = Nothing -- error ("Parser error at: " ++ show p)
 happyError []              = Nothing -- error ("Parser error at EOF")
+
+mkValue :: [Value] -> Value
+mkValue [v]             = v
+mkValue (Con x [] : vs) = Con x vs
+mkValue vs              = Con "" vs
 }

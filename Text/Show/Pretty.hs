@@ -124,7 +124,8 @@ ppInfixAtom v
   | otherwise     = parens (valToDoc v)
 
 ppCon :: Name -> [Value] -> Doc
-ppCon c vs = hang (text c) 2 (sep (map ppAtom vs))
+ppCon "" vs = sep (map ppAtom vs)
+ppCon c vs  = hang (text c) 2 (sep (map ppAtom vs))
 
 isAtom               :: Value -> Bool
 isAtom (Con _ (_:_))  = False

@@ -45,7 +45,6 @@ import Language.Haskell.Lexer
 
 value                        :: { Value }
   : value '%' app_value         { Ratio $1 $3 }
-  | '-' avalue                  { Neg $2 }
   | app_value                   { $1 }
   | app_value list1(infixelem)  { InfixCons $1 $2 }
 
@@ -66,6 +65,7 @@ avalue                       :: { Value }
   | FLOAT                       { Float $1 }
   | STRING                      { String $1 }
   | CHAR                        { Char $1 }
+  | '-' avalue                  { Neg $2 }
 
 con                          :: { String }
   : CONID                       { $1 }

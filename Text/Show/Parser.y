@@ -45,7 +45,6 @@ import Language.Haskell.Lexer
 
 value                        :: { Value }
   : value '%' app_value         { Ratio $1 $3 }
-  | '-' avalue                  { Neg $2 }
   | app_value                   { $1 }
   | app_value list1(infixelem)  { InfixCons $1 $2 }
 
@@ -55,17 +54,23 @@ infixelem                    :: { (String,Value) }
 app_value                    :: { Value }
   : list1(avalue)               { mkValue $1 }
 
-
 avalue                       :: { Value }
   : '(' value ')'               { $2 }
   | '[' sep(value,',') ']'      { List $2 }
   | '(' tuple ')'               { Tuple $2 }
   | con '{' sep(field,',') '}'  { Rec $1 $3 }
   | con                         { Con $1 [] }
-  | INT                         { Integer $1 }
-  | FLOAT                       { Float $1 }
   | STRING                      { String $1 }
   | CHAR                        { Char $1 }
+  | number                      { $1 }
+
+number                       :: { Value }
+  : '-' num                     { Neg $2 }
+  | num                         { $1 }
+
+num                          :: { Value }
+  : INT                         { Integer $1 }
+  | FLOAT                       { Float $1 }
 
 con                          :: { String }
   : CONID                       { $1 }

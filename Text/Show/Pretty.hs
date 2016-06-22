@@ -20,7 +20,7 @@ module Text.Show.Pretty
   , valToHtmlPage
 
     -- * Values using the 'Show' class
-  , parseValue, reify, ppDoc, ppShow
+  , parseValue, reify, ppDoc, ppShow, pPrint
 
     -- * Values using the 'PrettyVal' class
   , dumpDoc, dumpStr, PrettyVal(..)
@@ -64,6 +64,11 @@ ppDoc a = case parseValue txt of
             Just v  -> valToDoc v
             Nothing -> text txt
   where txt = show a
+
+-- | Pretty print a generic value to stdout. This is particularly useful in the
+-- GHCi interactive environment.
+pPrint :: Show a => a -> IO ()
+pPrint = putStrLn . ppShow
 
 -- | Render a value in the 'PrettyVal' class to a 'Doc'.
 -- The benefit of this function is that 'PrettyVal' instances may

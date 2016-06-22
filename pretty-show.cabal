@@ -64,6 +64,6 @@ executable ppsh
 
 source-repository head
   type:     git
-  location: git://github.com/yav/pretty-show.git
+  location: https://github.com/yav/pretty-show.git
 
 

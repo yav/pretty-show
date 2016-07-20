@@ -1,3 +1,6 @@
+Changes in 1.6.12
+  * Tread reserved operators as infix constructors (best effort kind of thing)
+
 Changes in 1.6.11
   * Add `pPrint`, which is `putStrLn . ppShow`
 

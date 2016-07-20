@@ -34,6 +34,7 @@ import Language.Haskell.Lexer
         QCONID          { (Qconid,   (_,$$)) }
         CONSYM          { (Consym,   (_,$$)) }
         QCONSYM         { (Qconsym,  (_,$$)) }
+        RESOP           { (Reservedop, (_,$$)) }
 
 
 %monad { Maybe } { (>>=) } { return }
@@ -83,6 +84,7 @@ infixcon                     :: { String }
   | QCONSYM                     { $1 }
   | '`' CONID '`'               { backtick $2 }
   | '`' QCONID '`'              { backtick $2 }
+  | RESOP                       { $1 }
 
 field                        :: { (Name,Value) }
   : VARID '=' value             { ($1,$3) }

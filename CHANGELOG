@@ -1,5 +1,8 @@
+Changes in 1.6.13
+  * Parse things like <function> and <Function> as constructors
+
 Changes in 1.6.12
-  * Tread reserved operators as infix constructors (best effort kind of thing)
+  * Treat reserved operators as infix constructors (best effort kind of thing)
 
 Changes in 1.6.11
   * Add `pPrint`, which is `putStrLn . ppShow`

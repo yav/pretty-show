@@ -16,6 +16,8 @@ import Language.Haskell.Lexer
         '}'             { (Special, (_,"}")) }
         '['             { (Special, (_,"[")) }
         ']'             { (Special, (_,"]")) }
+        '<'             { (Varsym, (_,"<")) }
+        '>'             { (Varsym, (_,">")) }
         ','             { (Special, (_,",")) }
         '-'             { (Varsym,  (_,"-")) }
         '%'             { (Varsym,  (_,"%")) }
@@ -78,6 +80,8 @@ con                          :: { String }
   | QVARID                      { $1 }
   | prefix(VARSYM)              { $1 }
   | prefix(QVARSYM)             { $1 }
+  | '<' VARID '>'               { "<" ++ $2 ++ ">" } -- note: looses space
+  | '<' CONID '>'               { "<" ++ $2 ++ ">" } -- ditto
 
 infixcon                     :: { String }
   : CONSYM                      { $1 }

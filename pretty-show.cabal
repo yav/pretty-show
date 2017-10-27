@@ -50,6 +50,7 @@ library
   ghc-options: -Wall -O2
   if impl(ghc < 7.4)
     cpp-options: -DNO_GENERICS
+  build-tool-depends: happy:happy
   build-tools: happy
 
 executable ppsh
@@ -59,7 +60,7 @@ executable ppsh
   hs-source-dirs: bin
   build-depends:
     base          >= 4.5  &&  < 5,
-    pretty-show   == 1.6.13
+    pretty-show
   ghc-options: -Wall
 
 source-repository head

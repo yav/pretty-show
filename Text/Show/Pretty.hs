@@ -22,6 +22,9 @@ module Text.Show.Pretty
     -- * Values using the 'Show' class
   , parseValue, reify, ppDoc, ppShow, pPrint
 
+  , -- * Working with listlike ("foldable") collections
+    ppDocList, ppShowList, pPrintList
+
     -- * Values using the 'PrettyVal' class
   , dumpDoc, dumpStr, PrettyVal(..)
 
@@ -40,6 +43,7 @@ import qualified Text.Show.Parser as P
 import Text.Show.Value
 import Text.Show.PrettyVal
 import Text.Show.Html
+import Data.Foldable(toList)
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
 import Paths_pretty_show (getDataDir)
 
@@ -57,6 +61,12 @@ parseValue = P.parseValue . rmSpace . lexerPass0
 ppShow :: Show a => a -> String
 ppShow = show . ppDoc
 
+-- | Pretty print something that may be converted to a list as a list.
+-- Each entry is on a separate line, which means that we don't do clever
+-- pretty printing, and so this works well for large strucutures.
+ppShowList :: (Foldable f, Show a) => f a -> String
+ppShowList = show . ppDocList
+
 -- | Try to show a value, prettily. If we do not understand the value, then we
 --   just use its standard 'Show' instance.
 ppDoc :: Show a => a -> Doc
@@ -65,10 +75,22 @@ ppDoc a = case parseValue txt of
             Nothing -> text txt
   where txt = show a
 
+-- | Pretty print something that may be converted to a list as a list.
+-- Each entry is on a separate line, which means that we don't do clever
+-- pretty printing, and so this works well for large strucutures.
+ppDocList :: (Foldable f, Show a) => f a -> Doc
+ppDocList = blockWith vcat '[' ']' . map ppDoc . toList
+
 -- | Pretty print a generic value to stdout. This is particularly useful in the
 -- GHCi interactive environment.
 pPrint :: Show a => a -> IO ()
 pPrint = putStrLn . ppShow
+
+-- | Pretty print something that may be converted to a list as a list.
+-- Each entry is on a separate line, which means that we don't do clever
+-- pretty printing, and so this works well for large strucutures.
+pPrintList :: (Foldable f, Show a) => f a -> IO ()
+pPrintList = putStrLn . ppShowList
 
 -- | Render a value in the 'PrettyVal' class to a 'Doc'.
 -- The benefit of this function is that 'PrettyVal' instances may
@@ -146,8 +168,12 @@ isInfixAtom (Ratio {})     = False
 isInfixAtom (Neg {})       = False
 isInfixAtom _              = True
 
-block            :: Char -> Char -> [Doc] -> Doc
-block a b []      = char a <> char b
-block a b (d:ds)  = sep $
+block :: Char -> Char -> [Doc] -> Doc
+block = blockWith sep
+
+blockWith :: ([Doc] -> Doc) -> Char -> Char -> [Doc] -> Doc
+blockWith _ a b []      = char a <> char b
+blockWith f a b (d:ds)  = f $
     (char a <+> d) : [ char ',' <+> x | x <- ds ] ++ [ char b ]
+
 

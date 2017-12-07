@@ -43,7 +43,7 @@ import qualified Text.Show.Parser as P
 import Text.Show.Value
 import Text.Show.PrettyVal
 import Text.Show.Html
-import Data.Foldable(toList)
+import Data.Foldable(Foldable,toList)
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
 import Paths_pretty_show (getDataDir)
 

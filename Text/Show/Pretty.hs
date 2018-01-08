@@ -11,6 +11,7 @@
 -- Functions for human-readable derived 'Show' instances.
 --------------------------------------------------------------------------------
 
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE Safe #-}
 module Text.Show.Pretty
   ( -- * Generic representation of values
@@ -46,6 +47,12 @@ import Text.Show.Html
 import Data.Foldable(Foldable,toList)
 import Language.Haskell.Lexer(rmSpace,lexerPass0)
 import Paths_pretty_show (getDataDir)
+
+#if MIN_VERSION_base(4,11,0)
+import Prelude hiding ( (<>) )
+#else
+import Prelude
+#endif
 
 {-# DEPRECATED ppValue "Please use `valToDoc` instead." #-}
 ppValue :: Value -> Doc

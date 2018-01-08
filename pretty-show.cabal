@@ -22,6 +22,10 @@ homepage:       http://wiki.github.com/yav/pretty-show
 cabal-version:  >= 1.8
 build-type:     Simple
 
+tested-with:    GHC == 7.10.3
+                GHC == 8.0.2
+                GHC == 8.2.2
+
 data-files:
   style/jquery.js
   style/jquery-src.js

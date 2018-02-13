@@ -1,3 +1,8 @@
+Changes in 1.7
+  * Add a dependency on package Text
+    - Adds an instance for `PrettyVal Text`
+    - Paves the road for using `Text` in the representation of values.
+
 Changes in 1.6.16
   * Fixes to accomodate GHC 8.4
 

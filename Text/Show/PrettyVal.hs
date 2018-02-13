@@ -8,6 +8,8 @@
 module Text.Show.PrettyVal ( PrettyVal(prettyVal) ) where
 
 import Text.Show.Value
+import Data.Text(Text)
+import qualified Data.Text as Text
 
 #ifndef NO_GENERICS
 import Data.Ratio
@@ -67,6 +69,7 @@ instance (GDump f, Constructor c) => GDump (M1 C c f) where
 
 instance (GDump f, Selector s) => GDump (M1 S s f) where
   gdump it@(M1 x) = repeat (selName it) `zip` map snd (gdump x)
+#endif
 
 oneVal :: [(Name,Value)] -> Value
 oneVal x =
@@ -108,23 +111,26 @@ instance (PrettyVal a, Integral a) => PrettyVal (Ratio a) where
 
 instance (PrettyVal a1, PrettyVal a2) => PrettyVal (a1,a2)
 instance (PrettyVal a1, PrettyVal a2, PrettyVal a3) => PrettyVal (a1,a2,a3)
-instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
-          PrettyVal a4) => PrettyVal (a1,a2,a3,a4)
+instance (PrettyVal a1, PrettyVal a2, PrettyVal a3, PrettyVal a4) =>
+  PrettyVal (a1,a2,a3,a4)
 
 instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
           PrettyVal a4, PrettyVal a5) => PrettyVal (a1,a2,a3,a4,a5)
 
 instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
-          PrettyVal a4, PrettyVal a5, PrettyVal a6) => PrettyVal (a1,a2,a3,a4,a5,a6)
+          PrettyVal a4, PrettyVal a5, PrettyVal a6) =>
+  PrettyVal (a1,a2,a3,a4,a5,a6)
 
 instance (PrettyVal a1, PrettyVal a2, PrettyVal a3,
-          PrettyVal a4, PrettyVal a5, PrettyVal a6, PrettyVal a7)
-  => PrettyVal (a1,a2,a3,a4,a5,a6,a7)
+          PrettyVal a4, PrettyVal a5, PrettyVal a6, PrettyVal a7) =>
+  PrettyVal (a1,a2,a3,a4,a5,a6,a7)
 
 instance PrettyVal Bool
 instance PrettyVal Ordering
 instance PrettyVal a => PrettyVal (Maybe a)
 instance (PrettyVal a, PrettyVal b) => PrettyVal (Either a b)
 
-#endif
+instance PrettyVal Text where
+  prettyVal = String . Text.unpack
+
 

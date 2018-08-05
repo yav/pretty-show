@@ -1,3 +1,8 @@
+Changes in 1.8
+  * Rejigger the rendering of unusal values, to improve the rendering of datres.
+    - a sequence of values with negative numbers is turned into an infix con
+    - change the association when sequences meet infix things
+
 Changes in 1.7
   * Add a dependency on package Text
     - Adds an instance for `PrettyVal Text`

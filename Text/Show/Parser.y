@@ -49,7 +49,7 @@ import Language.Haskell.Lexer
 value                        :: { Value }
   : value '%' app_value         { Ratio $1 $3 }
   | app_value                   { $1 }
-  | app_value list1(infixelem)  { InfixCons $1 $2 }
+  | app_value list1(infixelem)  { mkInfixCons $1 $2 }
 
 infixelem                    :: { (String,Value) }
   : infixcon app_value          { ($1,$2) }
@@ -124,7 +124,31 @@ happyError ((_,(p,_)) : _) = Nothing -- error ("Parser error at: " ++ show p)
 happyError []              = Nothing -- error ("Parser error at EOF")
 
 mkValue :: [Value] -> Value
-mkValue [v]             = v
-mkValue (Con x [] : vs) = Con x vs
-mkValue vs              = Con "" vs
+mkValue [v]                 = v
+mkValue (Con "" [] : vs)    = mkValue vs
+mkValue (Con x [] : vs)     = Con x vs
+mkValue (InfixCons v xs : Neg x : more)
+                            = mkValue (mkInfixCons v (xs ++ [("-",x)]) : more)
+mkValue (v : Neg x : more)  = mkValue (mkInfixCons v [("-",x)] : more)
+mkValue vs                  = Con "" vs
+
+{- When we see a sequence of thins:
+1 2 3 + x + y
+we parse it as:
+1 2 (3 + x + y)
+
+we do this to make parsing of dates to look a little nicer:
+
+(2018-08-05) 09 : 31
+
+ends up as
+
+(2018-08-05) (09:31)
+-}
+
+mkInfixCons :: Value -> [(Name,Value)] -> Value
+mkInfixCons (Con "" as) bs | not (null as) =
+  Con "" (init as ++ [InfixCons (last as) bs])
+mkInfixCons a bs = InfixCons a bs
+
 }

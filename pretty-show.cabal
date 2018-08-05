@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.8
+version:        1.8.1
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic
@@ -25,6 +25,7 @@ build-type:     Simple
 tested-with:    GHC == 7.10.3
                 GHC == 8.0.2
                 GHC == 8.2.2
+                GHC == 8.4.3
 
 data-files:
   style/jquery.js

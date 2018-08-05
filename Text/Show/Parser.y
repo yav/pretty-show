@@ -130,7 +130,7 @@ mkValue (Con x [] : vs)     = Con x vs
 mkValue (InfixCons v xs : Neg x : more)
                             = mkValue (mkInfixCons v (xs ++ [("-",x)]) : more)
 mkValue (v : Neg x : more)  = mkValue (mkInfixCons v [("-",x)] : more)
-mkValue vs                  = Con "" vs
+mkValue vs                  = mkFakeCon vs
 
 {- When we see a sequence of thins:
 1 2 3 + x + y
@@ -148,7 +148,24 @@ ends up as
 
 mkInfixCons :: Value -> [(Name,Value)] -> Value
 mkInfixCons (Con "" as) bs | not (null as) =
-  Con "" (init as ++ [InfixCons (last as) bs])
-mkInfixCons a bs = InfixCons a bs
+  mkFakeCon (init as ++ [mkInfixConsLast (last as) bs])
+mkInfixCons a bs = mkInfixConsLast a bs
+
+mkInfixConsLast :: Value -> [(Name,Value)] -> Value
+mkInfixConsLast v [] = v
+mkInfixConsLast v vs = mk [] vs
+  where
+  inf xs = InfixCons v (reverse xs)
+
+  mk ps [(x,Con "" (a:as))] = mkFakeCon (inf ((x,a):ps) : as)
+  mk ps [x]                 = inf (x:ps)
+  mk ps (x : xs)            = mk (x : ps) xs
+  mk _ []                   = error "impossible"
+
+mkFakeCon :: [Value] -> Value
+mkFakeCon vs = Con "" (concatMap expand vs)
+  where expand (Con "" vs) = vs
+        expand v           = [v]
+
 
 }

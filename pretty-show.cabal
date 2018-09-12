@@ -29,7 +29,6 @@ tested-with:    GHC == 7.10.3
 
 data-files:
   style/jquery.js
-  style/jquery-src.js
   style/pretty-show.js
   style/pretty-show.css
 

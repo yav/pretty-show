@@ -1,3 +1,6 @@
+Changes in 1.8.2
+  * Switch to using version 3.3.1 of jquery (jquery 1 seems to be long gone)
+
 Changes in 1.8
   * Rejigger the rendering of unusal values, to improve the rendering of datres.
     - a sequence of values with negative numbers is turned into an infix con

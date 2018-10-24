@@ -36,7 +36,7 @@ module Text.Show.Pretty
   , getDataDir
 
   , -- * Preprocessing of values
-    PreProc(..), ppHide, ppHideNested
+    PreProc(..), ppHide, ppHideNested, hideCon
 
     -- * Deprecated
   , ppValue

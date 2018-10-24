@@ -43,19 +43,21 @@ data Value    = Con Name [Value]               -- ^ Data constructor
                 deriving (Eq,Show)
 
 {- | Hide constrcutros matching the given predicate.
-If all fields of a constructor are hidden, then we also hide
-the constructor itslef.  If a record field is hidden,
-then we do not show its label either. -}
-hideCon :: (Name -> Bool) -> Value -> Value
-hideCon hidden = toVal . delMaybe
+If the hidden value is in a record, we also hide
+the corresponding record field.
+
+If the boolean flag is true, then we also hide
+constructors all of whose fields were hidden. -}
+hideCon :: Bool -> (Name -> Bool) -> Value -> Value
+hideCon collapse hidden = toVal . delMaybe
   where
-  hiddenV = Con "" []
+  hiddenV = Con "_" []
 
   toVal = fromMaybe hiddenV
 
   delMany vals
-    | all isNothing newVals = Nothing
-    | otherwise = Just (map toVal newVals)
+    | collapse && all isNothing newVals = Nothing
+    | otherwise                         = Just (map toVal newVals)
     where
     newVals = map delMaybe vals
 
@@ -64,12 +66,12 @@ hideCon hidden = toVal . delMaybe
       Con x vs
         | hidden x  -> Nothing
         | null vs   -> Just val
-        | otherwise -> Con x <$> delMany vs
+        | otherwise -> Con x `fmap` delMany vs
 
       Rec x fs
         | hidden x  -> Nothing
         | null fs   -> Just val
-        | all isNothing mbs -> Nothing
+        | collapse && all isNothing mbs -> Nothing
         | otherwise -> Just (Rec x [ (f,v) | (f,Just v) <- zip ls mbs ])
         where (ls,vs) = unzip fs
               mbs     = map delMaybe vs
@@ -81,10 +83,10 @@ hideCon hidden = toVal . delMaybe
           where (cs,vs) = unzip ys
 
       Tuple vs | null vs   -> Just val
-               | otherwise -> Tuple <$> delMany vs
+               | otherwise -> Tuple `fmap` delMany vs
       List vs  | null vs -> Just val
-               | otherwise -> List  <$> delMany vs
-      Neg v       -> Neg   <$> delMaybe v
+               | otherwise -> List `fmap` delMany vs
+      Neg v       -> Neg `fmap` delMaybe v
       Ratio v1 v2 -> do ~[a,b] <- delMany [v1,v2]
                         Just (Ratio a b)
       Integer {}  -> Just val

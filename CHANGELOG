@@ -1,3 +1,8 @@
+Changes in 1.9
+  * Add support for pre-processing values before printing.
+    In particular, we add a pre-processor which will hide some constructors
+    from the output.
+
 Changes in 1.8.2
   * Switch to using version 3.3.1 of jquery (jquery 1 seems to be long gone)
 

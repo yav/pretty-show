@@ -35,8 +35,8 @@ module Text.Show.Pretty
     -- * Get location of data files
   , getDataDir
 
-  , -- * Pre-processing of values
-    PreProcShow(..), PreProcDump(..), hideCon, showNoCons, dumpNoCons
+  , -- * Preprocessing of values
+    PreProc(..), ppHide, ppHideNested
 
     -- * Deprecated
   , ppValue
@@ -44,6 +44,7 @@ module Text.Show.Pretty
 
 import Text.PrettyPrint
 import qualified Text.Show.Parser as P
+import Text.Read(readMaybe)
 import Text.Show.Value
 import Text.Show.PrettyVal
 import Text.Show.Html
@@ -114,6 +115,7 @@ dumpDoc = valToDoc . prettyVal
 dumpStr :: PrettyVal a => a -> String
 dumpStr = show . dumpDoc
 
+-- | Render a value using the 'PrettyVal' class and show it to standard out.
 dumpIO :: PrettyVal a => a -> IO ()
 dumpIO = putStrLn . dumpStr
 
@@ -151,44 +153,28 @@ valToDoc val = case val of
   String x         -> text x
 
 
-{- | A helper type to allow for pre-propcessing a value before showing it.
-The 'PrettyVal' instance for this type will reify the value, and then
-apply the given function to.
-Example:
+-- | This type is used to allow pre-processing of values before showing them.
+data PreProc a = PreProc (Value -> Value) a
 
-> dumpIO $ PreProcShow (hideCon (== "A")) someValue
-
-This will pretty print @someValue@, but it will hide occurances
-of constructor @A@ -}
-
-data PreProcShow a = PreProcShow (Value -> Value) a
-
-
--- | Similar to 'PreProcShow' but uses the 'PrettyVal' class instead.
--- For details have a look at the documentation for 'PreProcShow'.
-data PreProcDump a = PreProcDump (Value -> Value) a
-
-instance Show a => PrettyVal (PreProcShow a) where
-  prettyVal (PreProcShow f a) =
+instance Show a => Show (PreProc a) where
+  showsPrec p (PreProc f a) cs =
     case parseValue txt of
-      Just v  -> f v
-      Nothing -> String txt
-    where txt = show a
+      Nothing -> txt ++ cs
+      Just v  -> wrap (valToStr (f v))
+    where
+    txt    = showsPrec p a ""
+    wrap a = case (a,txt) of
+              (h:_,'(':_) | h /= '(' -> '(' : (a ++ ')' : cs)
+              _ -> a ++ cs
 
-instance PrettyVal a => PrettyVal (PreProcDump a) where
-  prettyVal (PreProcDump f a) = f (prettyVal a)
+-- | Hide the given constructors when showing a value.
+ppHide :: (Name -> Bool) -> a -> PreProc a
+ppHide p = PreProc (hideCon False p)
 
-
--- | A short cut for the common case of pre-processing by hiding a list
--- of constructors.
-showNoCons :: [Name] -> a -> PreProcShow a
-showNoCons xs a = PreProcShow (hideCon (`elem` xs)) a
-
--- | A short cut for the common case of pre-processing by hiding a list
--- of constructors.
-dumpNoCons :: [Name] -> a -> PreProcDump a
-dumpNoCons xs a = PreProcDump (hideCon (`elem` xs)) a
-
+-- | hide the given constructors when showing a value.
+-- In addition, hide values if all of their children were hidden.
+ppHideNested :: (Name -> Bool) -> a -> PreProc a
+ppHideNested p = PreProc (hideCon True p)
 
 
 

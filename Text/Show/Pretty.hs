@@ -27,13 +27,16 @@ module Text.Show.Pretty
     ppDocList, ppShowList, pPrintList
 
     -- * Values using the 'PrettyVal' class
-  , dumpDoc, dumpStr, PrettyVal(..)
+  , dumpDoc, dumpStr, dumpIO, PrettyVal(..)
 
     -- * Rendering values to Html
   , valToHtml, HtmlOpts(..), defaultHtmlOpts, htmlPage, Html(..)
 
     -- * Get location of data files
   , getDataDir
+
+  , -- * Pre-processing of values
+    PreProcShow(..), PreProcDump(..), hideCon, showNoCons, dumpNoCons
 
     -- * Deprecated
   , ppValue
@@ -111,6 +114,9 @@ dumpDoc = valToDoc . prettyVal
 dumpStr :: PrettyVal a => a -> String
 dumpStr = show . dumpDoc
 
+dumpIO :: PrettyVal a => a -> IO ()
+dumpIO = putStrLn . dumpStr
+
 
 -- | Pretty print a generic value. Our intention is that the result is
 --   equivalent to the 'Show' instance for the original value, except possibly
@@ -143,6 +149,47 @@ valToDoc val = case val of
   Float x          -> text x
   Char x           -> text x
   String x         -> text x
+
+
+{- | A helper type to allow for pre-propcessing a value before showing it.
+The 'PrettyVal' instance for this type will reify the value, and then
+apply the given function to.
+Example:
+
+> dumpIO $ PreProcShow (hideCon (== "A")) someValue
+
+This will pretty print @someValue@, but it will hide occurances
+of constructor @A@ -}
+
+data PreProcShow a = PreProcShow (Value -> Value) a
+
+
+-- | Similar to 'PreProcShow' but uses the 'PrettyVal' class instead.
+-- For details have a look at the documentation for 'PreProcShow'.
+data PreProcDump a = PreProcDump (Value -> Value) a
+
+instance Show a => PrettyVal (PreProcShow a) where
+  prettyVal (PreProcShow f a) =
+    case parseValue txt of
+      Just v  -> f v
+      Nothing -> String txt
+    where txt = show a
+
+instance PrettyVal a => PrettyVal (PreProcDump a) where
+  prettyVal (PreProcDump f a) = f (prettyVal a)
+
+
+-- | A short cut for the common case of pre-processing by hiding a list
+-- of constructors.
+showNoCons :: [Name] -> a -> PreProcShow a
+showNoCons xs a = PreProcShow (hideCon (`elem` xs)) a
+
+-- | A short cut for the common case of pre-processing by hiding a list
+-- of constructors.
+dumpNoCons :: [Name] -> a -> PreProcDump a
+dumpNoCons xs a = PreProcDump (hideCon (`elem` xs)) a
+
+
 
 
 -- Private ---------------------------------------------------------------------
@@ -182,5 +229,6 @@ blockWith :: ([Doc] -> Doc) -> Char -> Char -> [Doc] -> Doc
 blockWith _ a b []      = char a <> char b
 blockWith f a b (d:ds)  = f $
     (char a <+> d) : [ char ',' <+> x | x <- ds ] ++ [ char b ]
+
 
 

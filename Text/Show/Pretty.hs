@@ -170,7 +170,7 @@ instance Show a => Show (PreProc a) where
 ppHide :: (Name -> Bool) -> a -> PreProc a
 ppHide p = PreProc (hideCon False p)
 
--- | hide the given constructors when showing a value.
+-- | Hide the given constructors when showing a value.
 -- In addition, hide values if all of their children were hidden.
 ppHideNested :: (Name -> Bool) -> a -> PreProc a
 ppHideNested p = PreProc (hideCon True p)

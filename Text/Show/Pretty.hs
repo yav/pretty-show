@@ -44,7 +44,6 @@ module Text.Show.Pretty
 
 import Text.PrettyPrint
 import qualified Text.Show.Parser as P
-import Text.Read(readMaybe)
 import Text.Show.Value
 import Text.Show.PrettyVal
 import Text.Show.Html
@@ -163,9 +162,9 @@ instance Show a => Show (PreProc a) where
       Just v  -> wrap (valToStr (f v))
     where
     txt    = showsPrec p a ""
-    wrap a = case (a,txt) of
-              (h:_,'(':_) | h /= '(' -> '(' : (a ++ ')' : cs)
-              _ -> a ++ cs
+    wrap t = case (t,txt) of
+              (h:_,'(':_) | h /= '(' -> '(' : (t ++ ')' : cs)
+              _ -> t ++ cs
 
 -- | Hide the given constructors when showing a value.
 ppHide :: (Name -> Bool) -> a -> PreProc a

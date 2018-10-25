@@ -1,3 +1,6 @@
+Changes in 1.9.1
+  * Allow keywords as the name of constructors
+
 Changes in 1.9
   * Add support for pre-processing values before printing.
     In particular, we add a pre-processor which will hide some constructors

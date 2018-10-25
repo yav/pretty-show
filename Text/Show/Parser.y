@@ -37,6 +37,8 @@ import Language.Haskell.Lexer
         CONSYM          { (Consym,   (_,$$)) }
         QCONSYM         { (Qconsym,  (_,$$)) }
         RESOP           { (Reservedop, (_,$$)) }
+        RESID           { (Reservedid, (_,$$)) }
+
 
 
 %monad { Maybe } { (>>=) } { return }
@@ -82,6 +84,7 @@ con                          :: { String }
   | prefix(QVARSYM)             { $1 }
   | '<' VARID '>'               { "<" ++ $2 ++ ">" } -- note: looses space
   | '<' CONID '>'               { "<" ++ $2 ++ ">" } -- ditto
+  | RESID                       { $1 }
 
 infixcon                     :: { String }
   : CONSYM                      { $1 }

@@ -1,3 +1,6 @@
+Changes in 1.9.2
+  * Allow VARSYM as infix constructors
+
 Changes in 1.9.1
   * Allow keywords as the name of constructors
 

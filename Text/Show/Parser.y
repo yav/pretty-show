@@ -89,6 +89,8 @@ con                          :: { String }
 infixcon                     :: { String }
   : CONSYM                      { $1 }
   | QCONSYM                     { $1 }
+  | VARSYM                      { $1 }
+  | QVARSYM                     { $1 }
   | '`' CONID '`'               { backtick $2 }
   | '`' QCONID '`'              { backtick $2 }
   | RESOP                       { $1 }

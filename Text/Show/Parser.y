@@ -131,7 +131,7 @@ happyError []              = Nothing -- error ("Parser error at EOF")
 mkValue :: [Value] -> Value
 mkValue [v]                 = v
 mkValue (Con "" [] : vs)    = mkValue vs
-mkValue (Con x [] : vs)     = Con x vs
+mkValue (Con x as : vs)     = Con x (as ++ vs)
 mkValue (InfixCons v xs : Neg x : more)
                             = mkValue (mkInfixCons v (xs ++ [("-",x)]) : more)
 mkValue (v : Neg x : more)  = mkValue (mkInfixCons v [("-",x)] : more)

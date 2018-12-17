@@ -1,3 +1,6 @@
+Changes in 1.9.3
+  * Fix issue #34
+
 Changes in 1.9.2
   * Allow VARSYM as infix constructors
 

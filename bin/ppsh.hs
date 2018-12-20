@@ -11,7 +11,7 @@ main =
      let (opts,hiding) = partitionEithers (map isHiding as)
          preproc v = case hiding of
                        [] -> v
-                       xs -> hideCon False (`elem` hiding) v
+                       _  -> hideCon False (`elem` hiding) v
      case opts of
        ["--test"] -> interactLn (show . selftest1)
 
@@ -20,10 +20,10 @@ main =
             case parseValue txt of
               Just v  ->
                 do dir <- getDataDir
-                   let opts = defaultHtmlOpts { dataDir = dir }
+                   let optis = defaultHtmlOpts { dataDir = dir }
                    -- XXX: perhaps for HTML the "hidden" values should
                    -- just start off collapsed, rahter than being deleted?
-                   putStrLn (valToHtmlPage opts (preproc v))
+                   putStrLn (valToHtmlPage optis (preproc v))
               Nothing -> hPutStrLn stderr "Failed to parse value."
 
        []         -> interactLn $ \s -> case parseValue s of

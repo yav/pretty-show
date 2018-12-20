@@ -13,6 +13,7 @@
 
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE Safe #-}
+{-# LANGUAGE PatternGuards #-}
 module Text.Show.Pretty
   ( -- * Generic representation of values
     Value(..), Name
@@ -42,13 +43,14 @@ module Text.Show.Pretty
   , ppValue
   ) where
 
+import Data.Char(isHexDigit)
 import Text.PrettyPrint
 import qualified Text.Show.Parser as P
 import Text.Show.Value
 import Text.Show.PrettyVal
 import Text.Show.Html
 import Data.Foldable(Foldable,toList)
-import Language.Haskell.Lexer(rmSpace,lexerPass0)
+import Language.Haskell.Lexer(rmSpace,lexerPass0,Token(..))
 import Paths_pretty_show (getDataDir)
 
 #if MIN_VERSION_base(4,11,0)
@@ -65,7 +67,20 @@ reify :: Show a => a -> Maybe Value
 reify = parseValue . show
 
 parseValue :: String -> Maybe Value
-parseValue = P.parseValue . rmSpace . lexerPass0
+parseValue = P.parseValue . rmSpace . foldr joinTokens [] . lexerPass0
+  where
+
+  -- Sometimes we join tokens that are next to each other, with no spaces.
+  -- This improves the printing of some malformed inputs:
+  --   * Hex numbers with no 0x:    "4ab"  instead of "4 ab"
+  joinTokens a@(t1,(p1,s1)) bs =
+    case bs of
+      (_t2,(_,s2)) : more
+        | IntLit <- t1, all isHexDigit s2 -> jn IntLit
+          where jn t = (t,(p1,s1++s2)) : more
+
+      _ -> a : bs
+
 
 -- | Convert a generic value into a pretty 'String', if possible.
 ppShow :: Show a => a -> String

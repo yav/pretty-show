@@ -10,6 +10,7 @@ module Text.Show.PrettyVal ( PrettyVal(prettyVal) ) where
 import Text.Show.Value
 import Data.Text(Text)
 import qualified Data.Text as Text
+import Data.Fixed (Fixed, HasResolution)
 
 #ifndef NO_GENERICS
 import Data.Ratio
@@ -108,6 +109,8 @@ instance PrettyVal a => PrettyVal [a] where
 
 instance (PrettyVal a, Integral a) => PrettyVal (Ratio a) where
   prettyVal r = Ratio (prettyVal (numerator r)) (prettyVal (denominator r))
+
+instance HasResolution p => PrettyVal (Fixed p) where prettyVal x = Float (show x)
 
 instance (PrettyVal a1, PrettyVal a2) => PrettyVal (a1,a2)
 instance (PrettyVal a1, PrettyVal a2, PrettyVal a3) => PrettyVal (a1,a2,a3)

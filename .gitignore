@@ -3,3 +3,4 @@ dist-newstyle
 cabal-dev
 .cabal-sandbox
 cabal.sandbox.config
+.ghc.environment.*

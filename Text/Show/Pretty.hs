@@ -165,6 +165,8 @@ valToDoc val = case val of
   Float x          -> text x
   Char x           -> text x
   String x         -> text x
+  Date x           -> text x
+  Time x           -> text x
 
 
 -- | This type is used to allow pre-processing of values before showing them.

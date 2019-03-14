@@ -69,6 +69,8 @@ valToHtml opts = loop
           Integer {} -> wideList (wideListWidth opts) $ map loop vs
           Float {}   -> wideList (wideListWidth opts) $ map loop vs
           Char {}    -> wideList (wideListWidth opts) $ map loop vs
+          Date {}    -> wideList (wideListWidth opts) $ map loop vs
+          Time {}    -> wideList (wideListWidth opts) $ map loop vs
           String {}  -> tallList                      $ map loop vs
           InfixCons {} -> tallList                    $ map loop vs
 
@@ -83,6 +85,8 @@ valToHtml opts = loop
       Float txt   -> span "float"   (text txt)
       Char txt    -> span "char"    (text txt)
       String txt  -> span "string"  (text txt)
+      Date txt    -> span "date"    (text txt)
+      Time txt    -> span "time"    (text txt)
 
   conLab _          = " "
 

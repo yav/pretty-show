@@ -40,6 +40,8 @@ data Value    = Con Name [Value]               -- ^ Data constructor
               | Float String                   -- ^ Non-negative floating num.
               | Char String                    -- ^ Character
               | String String                  -- ^ String
+              | Date String                    -- ^ 01-02-2003
+              | Time String                    -- ^ 08:30:21
                 deriving (Eq,Show)
 
 {- | Hide constrcutros matching the given predicate.
@@ -93,5 +95,7 @@ hideCon collapse hidden = toVal . delMaybe
       Float {}    -> Just val
       Char {}     -> Just val
       String {}   -> Just val
+      Date {}     -> Just val
+      Time {}     -> Just val
 
 

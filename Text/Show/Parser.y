@@ -5,6 +5,7 @@ module Text.Show.Parser (parseValue) where
 
 import Text.Show.Value
 import Language.Haskell.Lexer
+import Data.List(intercalate)
 }
 
 %token
@@ -22,6 +23,7 @@ import Language.Haskell.Lexer
         '-'             { (Varsym,  (_,"-")) }
         '%'             { (Varsym,  (_,"%")) }
         '`'             { (Special, (_,"`")) }
+        ':'             { (Reservedop,  (_,":")) }
 
         INT             { (IntLit,   (_,$$)) }
         FLOAT           { (FloatLit, (_,$$)) }
@@ -51,17 +53,18 @@ import Language.Haskell.Lexer
 value                        :: { Value }
   : value '%' app_value         { Ratio $1 $3 }
   | app_value                   { $1 }
-  | app_value list1(infixelem)  { mkInfixCons $1 $2 }
+  | app_value list1(infixelem)  { InfixCons $1 $2 }
 
 infixelem                    :: { (String,Value) }
   : infixcon app_value          { ($1,$2) }
 
 app_value                    :: { Value }
   : list1(avalue)               { mkValue $1 }
+  | '-' avalue                  { Neg $2 }
 
 
 avalue                       :: { Value }
-  : '(' value ')'               { $2 }
+  : '(' value ')'               { $2 }  -- hmm, we loose some parens here
   | '[' sep(value,',') ']'      { List $2 }
   | '(' tuple ')'               { Tuple $2 }
   | con '{' sep(field,',') '}'  { Rec $1 $3 }
@@ -70,7 +73,10 @@ avalue                       :: { Value }
   | FLOAT                       { Float $1 }
   | STRING                      { String $1 }
   | CHAR                        { Char $1 }
-  | '-' avalue                  { Neg $2 }
+  | INT '-' INT '-' INT         { mkDate $1 $3 $5 }
+  | INT ':' INT ':' INT         { mkTime $1 $3 $5 }
+  | INT ':' INT ':' FLOAT       { mkTime $1 $3 $5 }
+
 
 con                          :: { String }
   : CONID                       { $1 }
@@ -128,44 +134,19 @@ happyError :: [PosToken] -> Maybe a
 happyError ((_,(p,_)) : _) = Nothing -- error ("Parser error at: " ++ show p)
 happyError []              = Nothing -- error ("Parser error at EOF")
 
+mkDate :: String -> String -> String -> Value
+mkDate a b c = Date (intercalate "-" [a,b,c])
+
+mkTime :: String -> String -> String -> Value
+mkTime a b c = Time (intercalate ":" [a,b,c])
+
+
+
 mkValue :: [Value] -> Value
 mkValue [v]                 = v
 mkValue (Con "" [] : vs)    = mkValue vs
 mkValue (Con x as : vs)     = Con x (as ++ vs)
-mkValue (InfixCons v xs : Neg x : more)
-                            = mkValue (mkInfixCons v (xs ++ [("-",x)]) : more)
-mkValue (v : Neg x : more)  = mkValue (mkInfixCons v [("-",x)] : more)
 mkValue vs                  = mkFakeCon vs
-
-{- When we see a sequence of thins:
-1 2 3 + x + y
-we parse it as:
-1 2 (3 + x + y)
-
-we do this to make parsing of dates to look a little nicer:
-
-(2018-08-05) 09 : 31
-
-ends up as
-
-(2018-08-05) (09:31)
--}
-
-mkInfixCons :: Value -> [(Name,Value)] -> Value
-mkInfixCons (Con "" as) bs | not (null as) =
-  mkFakeCon (init as ++ [mkInfixConsLast (last as) bs])
-mkInfixCons a bs = mkInfixConsLast a bs
-
-mkInfixConsLast :: Value -> [(Name,Value)] -> Value
-mkInfixConsLast v [] = v
-mkInfixConsLast v vs = mk [] vs
-  where
-  inf xs = InfixCons v (reverse xs)
-
-  mk ps [(x,Con "" (a:as))] = mkFakeCon (inf ((x,a):ps) : as)
-  mk ps [x]                 = inf (x:ps)
-  mk ps (x : xs)            = mk (x : ps) xs
-  mk _ []                   = error "impossible"
 
 mkFakeCon :: [Value] -> Value
 mkFakeCon vs = Con "" (concatMap expand vs)

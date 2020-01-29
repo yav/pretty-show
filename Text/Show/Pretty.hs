@@ -167,6 +167,7 @@ valToDoc val = case val of
   String x         -> text x
   Date x           -> text x
   Time x           -> text x
+  Quote x          -> text x
 
 
 -- | This type is used to allow pre-processing of values before showing them.

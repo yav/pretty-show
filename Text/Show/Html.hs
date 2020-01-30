@@ -71,6 +71,7 @@ valToHtml opts = loop
           Char {}    -> wideList (wideListWidth opts) $ map loop vs
           Date {}    -> wideList (wideListWidth opts) $ map loop vs
           Time {}    -> wideList (wideListWidth opts) $ map loop vs
+          Quote {}   -> wideList (wideListWidth opts) $ map loop vs
           String {}  -> tallList                      $ map loop vs
           InfixCons {} -> tallList                    $ map loop vs
 
@@ -87,6 +88,7 @@ valToHtml opts = loop
       String txt  -> span "string"  (text txt)
       Date txt    -> span "date"    (text txt)
       Time txt    -> span "time"    (text txt)
+      Quote txt   -> span "quote"   (text txt)
 
   conLab _          = " "
 

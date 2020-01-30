@@ -42,6 +42,7 @@ data Value    = Con Name [Value]               -- ^ Data constructor
               | String String                  -- ^ String
               | Date String                    -- ^ 01-02-2003
               | Time String                    -- ^ 08:30:21
+              | Quote String                   -- ^ [time|2003-02-01T08:30:21Z|]
                 deriving (Eq,Show)
 
 {- | Hide constrcutros matching the given predicate.
@@ -97,5 +98,6 @@ hideCon collapse hidden = toVal . delMaybe
       String {}   -> Just val
       Date {}     -> Just val
       Time {}     -> Just val
+      Quote {}    -> Just val
 
 

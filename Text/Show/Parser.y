@@ -38,6 +38,7 @@ import Data.List(intercalate)
         QCONID          { (Qconid,   (_,$$)) }
         CONSYM          { (Consym,   (_,$$)) }
         QCONSYM         { (Qconsym,  (_,$$)) }
+        QQUOTE          { (QQuote,   (_,$$)) }
         RESOP           { (Reservedop, (_,$$)) }
         RESID           { (Reservedid, (_,$$)) }
 
@@ -76,6 +77,7 @@ avalue                       :: { Value }
   | INT '-' INT '-' INT         { mkDate $1 $3 $5 }
   | INT ':' INT ':' INT         { mkTime $1 $3 $5 }
   | INT ':' INT ':' FLOAT       { mkTime $1 $3 $5 }
+  | QQUOTE                      { Quote $1 }
 
 
 con                          :: { String }

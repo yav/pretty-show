@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.9.6
+version:        1.10
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic
@@ -48,7 +48,7 @@ library
   build-depends:
     array          >= 0.2  &&  < 2,
     base           >= 4.5  &&  < 5,
-    haskell-lexer  >= 1    &&  < 2,
+    haskell-lexer  >= 1.1    &&  < 2,
     pretty         >= 1    &&  < 2,
     text,
     filepath,

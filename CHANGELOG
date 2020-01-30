@@ -1,3 +1,7 @@
+Changes in 1.10
+  * Add support for quasi-quotes, as the preferred way of dealing
+    with non-properly showable things.
+
 Changes in 1.9.5
   * Add a `PrettyVal` instance for `Data.Fixed`
 

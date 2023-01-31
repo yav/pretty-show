@@ -17,7 +17,7 @@ license-file:   LICENSE
 author:         Iavor S. Diatchki
 maintainer:     iavor.diatchki@gmail.com
 
-homepage:       http://wiki.github.com/yav/pretty-show
+homepage:       https://github.com/yav/pretty-show
 
 cabal-version:  >= 1.8
 build-type:     Simple

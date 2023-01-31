@@ -1,5 +1,5 @@
 name:           pretty-show
-version:        1.10
+version:        1.11
 category:       Text
 
 synopsis:       Tools for working with derived `Show` instances and generic
@@ -52,6 +52,8 @@ library
     pretty         >= 1    &&  < 2,
     text,
     filepath,
+    unordered-containers,
+    hashable,
     ghc-prim
   ghc-options: -Wall -O2
   if impl(ghc < 7.4)

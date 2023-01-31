@@ -36,6 +36,9 @@ module Text.Show.Pretty
     -- * Get location of data files
   , getDataDir
 
+    -- * PPShow newtype wrapper
+  , PPShow(..)
+
   , -- * Preprocessing of values
     PreProc(..), ppHide, ppHideNested, hideCon
 
@@ -62,6 +65,17 @@ import Prelude
 {-# DEPRECATED ppValue "Please use `valToDoc` instead." #-}
 ppValue :: Value -> Doc
 ppValue = valToDoc
+
+{- | This is just a wrapper, so that calling `show` on a value will
+use `ppShow` on it instead.  Convenient for writing tests, so that
+you get a prettier message if the test fails -}
+newtype PPShow a = PPShow a
+  deriving (Eq,Ord)
+
+instance Show a => Show (PPShow a) where
+  show (PPShow a) = ppShow a
+
+
 
 reify :: Show a => a -> Maybe Value
 reify = parseValue . show

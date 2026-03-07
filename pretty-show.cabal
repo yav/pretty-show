@@ -46,15 +46,11 @@ library
     Text.Show.PrettyVal
     Paths_pretty_show
   build-depends:
-    array          >= 0.2  &&  < 2,
-    base           >= 4.5  &&  < 5,
-    haskell-lexer  >= 1.1    &&  < 2,
-    pretty         >= 1    &&  < 2,
-    text,
-    filepath,
-    unordered-containers,
-    hashable,
-    ghc-prim
+    array          >= 0.2 && < 2,
+    base           >= 4.6 && < 5,
+    haskell-lexer  >= 1.1 && < 2,
+    pretty         >= 1   && < 2,
+    text
   ghc-options: -Wall -O2
   if impl(ghc < 7.4)
     cpp-options: -DNO_GENERICS
@@ -67,7 +63,7 @@ executable ppsh
 
   hs-source-dirs: bin
   build-depends:
-    base          >= 4.5  &&  < 5,
+    base          >= 4.6 && < 5,
     pretty-show
   ghc-options: -Wall
 
